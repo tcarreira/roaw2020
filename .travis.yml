@@ -1,0 +1,22 @@
+language: go
+
+go:
+  - "1.11.x"
+
+env:
+  - GO_ENV=test
+
+services:
+  - postgresql
+
+before_script:
+  - psql -c 'create database roaw2020_test;' -U postgres
+  - mkdir -p $TRAVIS_BUILD_DIR/public/assets
+
+go_import_path: github.com/tcarreira/roaw2020
+
+install:
+  - go get github.com/gobuffalo/buffalo/buffalo
+  - go mod download
+
+script: buffalo test
