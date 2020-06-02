@@ -18,6 +18,8 @@ import (
 // application is being run. Default is "development".
 var ENV = envy.Get("GO_ENV", "development")
 var app *buffalo.App
+
+// T - Translator for handling all your i18n needs.
 var T *i18n.Translator
 
 // App is where all routes and middleware for buffalo
@@ -58,7 +60,15 @@ func App() *buffalo.App {
 		// Setup and use translations:
 		app.Use(translations())
 
+		// Setup Authorization
+		app.Use(SetCurrentUser)
+		app.Use(Authorize)
+
+		app.Middleware.Skip(Authorize, HomeHandler)
 		app.GET("/", HomeHandler)
+
+		// /auth/ endpoints
+		authRoutes(app)
 
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
