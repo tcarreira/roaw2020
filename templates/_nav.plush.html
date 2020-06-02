@@ -1,0 +1,11 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="/"><%= appFullName %></a>
+  <div class="navbar-nav mr-auto"></div>
+
+<%= if( isLoggedIn() ) { %>
+  <a href="/auth/logout"><button class="btn btn-outline-secundary my-2 my-sm-0">Logout</button></a>
+<% } else { %>
+  <a href="/auth/strava"><button class="btn btn-outline-primary my-2 my-sm-0">Strava Login</button></a>
+<% } %>
+
+</nav>
