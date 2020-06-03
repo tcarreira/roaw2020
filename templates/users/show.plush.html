@@ -1,0 +1,63 @@
+<div class="py-4 mb-2">
+  <h3 class="d-inline-block">User Details</h3>
+
+  <div class="float-right">
+    <%= linkTo(usersPath(), {class: "btn btn-info"}) { %>
+      Back to all Users
+    <% } %>
+    <%= linkTo(userRefreshPath({ user_id: user.ID }), {class: "btn btn-warning", body: "Refresh Token"}) %>
+  </div>
+</div>
+
+
+
+<ul class="list-group mb-2 ">
+
+
+  <li class="list-group-item pb-1">
+    <label class="small d-block">ID</label>
+    <p class="d-inline-block"><%= user.ID %></p>
+  </li>
+
+  <li class="list-group-item pb-1">
+    <label class="small d-block">Name</label>
+    <p class="d-inline-block"><%= user.Name %></p>
+  </li>
+
+  <li class="list-group-item pb-1">
+    <label class="small d-block">Provider</label>
+    <p class="d-inline-block"><%= user.Provider %></p>
+  </li>
+
+  <li class="list-group-item pb-1">
+    <label class="small d-block">ProviderID</label>
+    <p class="d-inline-block"><%= user.ProviderID %></p>
+  </li>
+
+  <li class="list-group-item pb-1">
+    <label class="small d-block">AccessToken</label>
+    <p class="d-inline-block"><%= user.AccessToken %></p>
+  </li>
+
+  <li class="list-group-item pb-1">
+    <label class="small d-block">RefreshToken</label>
+    <p class="d-inline-block"><%= user.RefreshToken %></p>
+  </li>
+
+  <li class="list-group-item pb-1">
+    <label class="small d-block">AvatarURL</label>
+    <p class="d-inline-block"><%= user.AvatarURL %></p>
+  </li>
+
+  <li class="list-group-item pb-1">
+    <label class="small d-block">CreatedAt</label>
+    <p class="d-inline-block"><%= user.CreatedAt %></p>
+  </li>
+
+  <li class="list-group-item pb-1">
+    <label class="small d-block">UpdatedAt</label>
+    <p class="d-inline-block"><%= user.UpdatedAt %></p>
+  </li>
+
+
+</ul>

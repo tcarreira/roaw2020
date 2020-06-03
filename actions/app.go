@@ -1,7 +1,11 @@
 package actions
 
 import (
+	"fmt"
+	"io"
+
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/buffalo/render"
 	"github.com/gobuffalo/envy"
 	forcessl "github.com/gobuffalo/mw-forcessl"
 	paramlogger "github.com/gobuffalo/mw-paramlogger"
@@ -72,6 +76,13 @@ func App() *buffalo.App {
 
 		app.Resource("/activities", ActivitiesResource{})
 
+		users := app.Group("/users")
+		users.GET("", ListUsersHandler)
+		users.GET("/{user_id}", ShowUsersHandler)
+		users.GET("/{user_id}/refresh", RefreshUsersHandler)
+
+		app.GET("/info", getInfo)
+
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
 
@@ -100,4 +111,15 @@ func forceSSL() buffalo.MiddlewareFunc {
 		SSLRedirect:     ENV == "production",
 		SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
 	})
+}
+
+func getInfo(c buffalo.Context) error {
+	output := fmt.Sprintf("%+v\n", c)
+	html := "<html><body><div style=\"white-space: pre-wrap;\"><pre style=\"white-space: pre-wrap;\">\n" + output + "\n</pre></div>"
+	return c.Render(200,
+		r.Func("text/html",
+			func(w io.Writer, d render.Data) error {
+				_, err := w.Write([]byte(html))
+				return err
+			}))
 }

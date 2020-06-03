@@ -18,7 +18,8 @@ import (
 func init() {
 	gothic.Store = App().SessionStore
 
-	stravaScopes := []string{"read", "activity:read"}
+	// the strava api requires comma separated scopes
+	stravaScopes := []string{"read,activity:read"}
 
 	goth.UseProviders(
 		strava.New(os.Getenv("STRAVA_KEY"), os.Getenv("STRAVA_SECRET"), fmt.Sprintf("%s%s", App().Host, "/auth/strava/callback"), stravaScopes...),

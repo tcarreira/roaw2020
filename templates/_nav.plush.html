@@ -3,7 +3,7 @@
   <div class="navbar-nav mr-auto"></div>
 
 <%= if( isLoggedIn() ) { %>
-  <a href="/auth/logout"><button class="btn btn-outline-secundary my-2 my-sm-0">Logout</button></a>
+  <a href="/auth/logout"><button class="btn btn-outline-secundary my-2 my-sm-0"> Logout (<%= current_user.Name %>)</button></a>
 <% } else { %>
   <a href="/auth/strava"><button class="btn btn-outline-primary my-2 my-sm-0">Strava Login</button></a>
 <% } %>
