@@ -29,7 +29,7 @@ func ListUsersHandler(c buffalo.Context) error {
 	q := tx.PaginateFromParams(c.Params())
 
 	// Retrieve all Users from the DB
-	if err := q.All(users); err != nil {
+	if err := q.Order("name asc").All(users); err != nil {
 		return err
 	}
 
@@ -40,9 +40,9 @@ func ListUsersHandler(c buffalo.Context) error {
 		c.Set("users", users)
 		return c.Render(http.StatusOK, r.HTML("/users/index.plush.html"))
 	}).Wants("json", func(c buffalo.Context) error {
-		return c.Render(200, r.JSON(users))
+		return c.Render(http.StatusOK, r.JSON(users))
 	}).Wants("xml", func(c buffalo.Context) error {
-		return c.Render(200, r.XML(users))
+		return c.Render(http.StatusOK, r.XML(users))
 	}).Respond(c)
 }
 
@@ -68,9 +68,9 @@ func ShowUsersHandler(c buffalo.Context) error {
 
 		return c.Render(http.StatusOK, r.HTML("/users/show.plush.html"))
 	}).Wants("json", func(c buffalo.Context) error {
-		return c.Render(200, r.JSON(user))
+		return c.Render(http.StatusOK, r.JSON(user))
 	}).Wants("xml", func(c buffalo.Context) error {
-		return c.Render(200, r.XML(user))
+		return c.Render(http.StatusOK, r.XML(user))
 	}).Respond(c)
 }
 
@@ -91,13 +91,27 @@ func RefreshUsersHandler(c buffalo.Context) error {
 		return c.Error(http.StatusNotFound, err)
 	}
 
-	gu := goth.User{}
-	gu.AccessToken = user.AccessToken
-	gu.RefreshToken = user.RefreshToken
+	stravaProvider, ok := goth.GetProviders()[user.Provider]
+	if !ok {
+		c.Flash().Add("danger", fmt.Sprintf("%s connector is having a problem. Contact the admin", user.Provider))
+		// TODO: add mailing here
+		return c.Redirect(http.StatusTemporaryRedirect, "/users")
+	}
 
-	// stravaProvider := goth.GetProviders()["strava"]
-	// stravaProvider.
-	// stravaProvider.RefreshToken(user.RefreshToken)
+	newToken, err := stravaProvider.RefreshToken(user.RefreshToken)
+	if err != nil {
+		c.Flash().Add("danger", "The token could not be refreshed")
+		return c.Redirect(http.StatusTemporaryRedirect, "/users")
+	}
 
-	return c.Redirect(302, "/users")
+	if user.AccessToken == newToken.AccessToken {
+		c.Flash().Add("success", fmt.Sprintf("Token was not renewed. Expires at %+v", newToken.Expiry))
+	} else {
+		user.AccessToken = newToken.AccessToken
+		user.RefreshToken = newToken.RefreshToken
+		tx.Save(user)
+		c.Flash().Add("success", fmt.Sprintf("New token (%s) expires at %+v", newToken.AccessToken, newToken.Expiry))
+	}
+
+	return c.Redirect(http.StatusTemporaryRedirect, "/users")
 }

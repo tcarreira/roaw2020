@@ -81,7 +81,7 @@ func App() *buffalo.App {
 		users.GET("/{user_id}", ShowUsersHandler)
 		users.GET("/{user_id}/refresh", RefreshUsersHandler)
 
-		app.GET("/info", getInfo)
+		app.GET("/info", getInfo) // XXX: remove this in production
 
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
