@@ -1,0 +1,6 @@
+- id: "activity.created.success"
+  translation: "Activity was successfully created."
+- id: "activity.updated.success"
+  translation: "Activity was successfully updated."
+- id: "activity.destroyed.success"
+  translation: "Activity was successfully destroyed."

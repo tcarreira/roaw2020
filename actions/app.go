@@ -70,6 +70,8 @@ func App() *buffalo.App {
 		// /auth/ endpoints
 		authRoutes(app)
 
+		app.Resource("/activities", ActivitiesResource{})
+
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
 

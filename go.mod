@@ -18,6 +18,7 @@ require (
 	github.com/gobuffalo/validate/v3 v3.3.0
 	github.com/gobuffalo/x v0.0.0-20190224155809-6bb134105960
 	github.com/gofrs/uuid v3.3.0+incompatible
+	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/markbates/going v1.0.3
 	github.com/markbates/goth v1.64.1
 	github.com/markbates/grift v1.5.0
