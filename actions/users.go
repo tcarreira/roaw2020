@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/antihax/optional"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop/v5"
 	"github.com/gobuffalo/x/responder"
@@ -133,7 +135,12 @@ func FetchActivitiesHandler(c buffalo.Context) error {
 	client := swagger.NewAPIClient(swagger.NewConfiguration())
 
 	ctx := context.WithValue(context.Background(), swagger.ContextAccessToken, user.AccessToken)
-	activities, response, err := client.ActivitiesApi.GetLoggedInAthleteActivities(ctx, nil)
+	options := &swagger.ActivitiesApiGetLoggedInAthleteActivitiesOpts{
+		Before:  optional.Int32{},
+		After:   optional.NewInt32(int32(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Unix())),
+		Page:    optional.Int32{},
+		PerPage: optional.NewInt32(20)}
+	activities, response, err := client.ActivitiesApi.GetLoggedInAthleteActivities(ctx, options)
 	if err != nil {
 		c.Flash().Add("error", fmt.Sprintf("Could not fetch activities (%s)", err))
 		return c.Redirect(http.StatusTemporaryRedirect, "/users/"+c.Param("user_id"))
