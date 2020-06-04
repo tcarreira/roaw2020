@@ -132,29 +132,41 @@ func FetchActivitiesHandler(c buffalo.Context) error {
 		return c.Error(http.StatusNotFound, err)
 	}
 
-	client := swagger.NewAPIClient(swagger.NewConfiguration())
+	var allActivities []swagger.SummaryActivity
 
+	client := swagger.NewAPIClient(swagger.NewConfiguration())
 	ctx := context.WithValue(context.Background(), swagger.ContextAccessToken, user.AccessToken)
+	resultsPerPage := 20
 	options := &swagger.ActivitiesApiGetLoggedInAthleteActivitiesOpts{
-		Before:  optional.Int32{},
+		// Before:  optional.EmptyInt32(),
+		Before:  optional.NewInt32(int32(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC).Unix())),
 		After:   optional.NewInt32(int32(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Unix())),
 		Page:    optional.Int32{},
-		PerPage: optional.NewInt32(20)}
-	activities, response, err := client.ActivitiesApi.GetLoggedInAthleteActivities(ctx, options)
-	if err != nil {
-		c.Flash().Add("error", fmt.Sprintf("Could not fetch activities (%s)", err))
-		return c.Redirect(http.StatusTemporaryRedirect, "/users/"+c.Param("user_id"))
+		PerPage: optional.NewInt32(int32(resultsPerPage)),
+	}
+
+	for i := int32(1); ; i++ {
+		options.Page = optional.NewInt32(i)
+		activities, _, err := client.ActivitiesApi.GetLoggedInAthleteActivities(ctx, options)
+		allActivities = append(allActivities, activities...)
+
+		if err != nil {
+			c.Flash().Add("error", fmt.Sprintf("Could not fetch activities (%s)", err))
+			return c.Redirect(http.StatusTemporaryRedirect, "/users/"+c.Param("user_id"))
+		}
+
+		if len(activities) != resultsPerPage {
+			break
+		}
 	}
 
 	return responder.Wants("html", func(c buffalo.Context) error {
 		c.Set("user", user)
-		c.Set("a1", fmt.Sprintf("%+v", activities))
-		c.Set("a2", fmt.Sprintf("%+v", response))
-		c.Set("activities", activities)
+		c.Set("activities", allActivities)
 		return c.Render(http.StatusOK, r.HTML("/users/activities.plush.html"))
 	}).Wants("json", func(c buffalo.Context) error {
-		return c.Render(http.StatusOK, r.JSON(activities))
+		return c.Render(http.StatusOK, r.JSON(allActivities))
 	}).Wants("xml", func(c buffalo.Context) error {
-		return c.Render(http.StatusOK, r.XML(activities))
+		return c.Render(http.StatusOK, r.XML(allActivities))
 	}).Respond(c)
 }
