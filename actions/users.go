@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/markbates/goth"
 
 	"github.com/tcarreira/roaw2020/models"
+	"github.com/tcarreira/roaw2020/swagger"
 )
 
 // ListUsersHandler gets all Users. This function is mapped to the path
@@ -46,7 +48,7 @@ func ListUsersHandler(c buffalo.Context) error {
 	}).Respond(c)
 }
 
-// Show gets the data for one User. This function is mapped to
+// ShowUsersHandler gets the data for one User. This function is mapped to
 // the path GET /users/{user_id}
 func ShowUsersHandler(c buffalo.Context) error {
 	// Get the DB connection from the context
@@ -74,8 +76,7 @@ func ShowUsersHandler(c buffalo.Context) error {
 	}).Respond(c)
 }
 
-// Show gets the data for one User. This function is mapped to
-// the path GET /users/{user_id}
+// RefreshUsersHandler refresh user access tokens
 func RefreshUsersHandler(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
@@ -114,4 +115,39 @@ func RefreshUsersHandler(c buffalo.Context) error {
 	}
 
 	return c.Redirect(http.StatusTemporaryRedirect, "/users")
+}
+
+// FetchActivitiesHandler will import all activities from the provider and populate the database
+func FetchActivitiesHandler(c buffalo.Context) error {
+	tx, ok := c.Value("tx").(*pop.Connection)
+	if !ok {
+		return fmt.Errorf("no transaction found")
+	}
+
+	user := &models.User{}
+	// To find the User the parameter user_id is used.
+	if err := tx.Find(user, c.Param("user_id")); err != nil {
+		return c.Error(http.StatusNotFound, err)
+	}
+
+	client := swagger.NewAPIClient(swagger.NewConfiguration())
+
+	ctx := context.WithValue(context.Background(), swagger.ContextAccessToken, user.AccessToken)
+	activities, response, err := client.ActivitiesApi.GetLoggedInAthleteActivities(ctx, nil)
+	if err != nil {
+		c.Flash().Add("error", fmt.Sprintf("Could not fetch activities (%s)", err))
+		return c.Redirect(http.StatusTemporaryRedirect, "/users/"+c.Param("user_id"))
+	}
+
+	return responder.Wants("html", func(c buffalo.Context) error {
+		c.Set("user", user)
+		c.Set("a1", fmt.Sprintf("%+v", activities))
+		c.Set("a2", fmt.Sprintf("%+v", response))
+		c.Set("activities", activities)
+		return c.Render(http.StatusOK, r.HTML("/users/activities.plush.html"))
+	}).Wants("json", func(c buffalo.Context) error {
+		return c.Render(http.StatusOK, r.JSON(activities))
+	}).Wants("xml", func(c buffalo.Context) error {
+		return c.Render(http.StatusOK, r.XML(activities))
+	}).Respond(c)
 }

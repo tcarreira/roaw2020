@@ -3,6 +3,7 @@ module github.com/tcarreira/roaw2020
 go 1.14
 
 require (
+	github.com/antihax/optional v1.0.0
 	github.com/gobuffalo/buffalo v0.15.5
 	github.com/gobuffalo/buffalo-pop/v2 v2.0.6
 	github.com/gobuffalo/envy v1.9.0
@@ -25,4 +26,5 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/unrolled/secure v0.0.0-20190103195806-76e6d4e9b90c
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9 // indirect
+	golang.org/x/oauth2 v0.0.0-20181203162652-d668ce993890
 )

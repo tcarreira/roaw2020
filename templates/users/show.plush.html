@@ -6,6 +6,7 @@
       Back to all Users
     <% } %>
     <%= linkTo(userRefreshPath({ user_id: user.ID }), {class: "btn btn-warning", body: "Refresh Token"}) %>
+    <%= linkTo(userActivitiesPath({ user_id: user.ID }), {class: "btn btn-info", body: "Activities"}) %>
   </div>
 </div>
 
