@@ -13,7 +13,7 @@ import (
 	"github.com/markbates/goth"
 
 	"github.com/tcarreira/roaw2020/models"
-	"github.com/tcarreira/roaw2020/swagger"
+	"github.com/tcarreira/roaw2020/strava_client/swagger"
 )
 
 // ListUsersHandler gets all Users. This function is mapped to the path
