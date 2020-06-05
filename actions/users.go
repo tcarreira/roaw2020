@@ -1,18 +1,16 @@
 package actions
 
 import (
-	"context"
 	"fmt"
 	"net/http"
-	"time"
 
-	"github.com/antihax/optional"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop/v5"
 	"github.com/gobuffalo/x/responder"
 	"github.com/markbates/goth"
 
 	"github.com/tcarreira/roaw2020/models"
+	stravaclient "github.com/tcarreira/roaw2020/strava_client"
 	"github.com/tcarreira/roaw2020/strava_client/swagger"
 )
 
@@ -132,35 +130,16 @@ func FetchActivitiesHandler(c buffalo.Context) error {
 		return c.Error(http.StatusNotFound, err)
 	}
 
-	var allActivities []swagger.SummaryActivity
-
-	client := swagger.NewAPIClient(swagger.NewConfiguration())
-	ctx := context.WithValue(context.Background(), swagger.ContextAccessToken, user.AccessToken)
-	resultsPerPage := 20
-	options := &swagger.ActivitiesApiGetLoggedInAthleteActivitiesOpts{
-		// Before:  optional.EmptyInt32(),
-		Before:  optional.NewInt32(int32(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC).Unix())),
-		After:   optional.NewInt32(int32(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Unix())),
-		Page:    optional.Int32{},
-		PerPage: optional.NewInt32(int32(resultsPerPage)),
-	}
-
-	for i := int32(1); ; i++ {
-		options.Page = optional.NewInt32(i)
-		activities, _, err := client.ActivitiesApi.GetLoggedInAthleteActivities(ctx, options)
-		allActivities = append(allActivities, activities...)
-
-		if err != nil {
-			c.Flash().Add("error", fmt.Sprintf("Could not fetch activities (%s)", err))
-			return c.Redirect(http.StatusTemporaryRedirect, "/users/"+c.Param("user_id"))
-		}
-
-		if len(activities) != resultsPerPage {
-			break
-		}
+	allActivities, err := stravaclient.FetchAllActivities(user.AccessToken)
+	if err != nil {
+		c.Flash().Add("error", fmt.Sprintf("Could not fetch activities (%s)", err))
+		return c.Redirect(http.StatusTemporaryRedirect, "/users/"+c.Param("user_id"))
 	}
 
 	return responder.Wants("html", func(c buffalo.Context) error {
+		c.Set("activityType", func(a swagger.SummaryActivity) string {
+			return string(*a.Type_)
+		})
 		c.Set("user", user)
 		c.Set("activities", allActivities)
 		return c.Render(http.StatusOK, r.HTML("/users/activities.plush.html"))
