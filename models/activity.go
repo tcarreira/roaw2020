@@ -2,12 +2,15 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/gobuffalo/pop/v5"
 	"github.com/gobuffalo/validate/v3"
 	"github.com/gobuffalo/validate/v3/validators"
 	"github.com/gofrs/uuid"
+	"github.com/tcarreira/roaw2020/strava_client/swagger"
 )
 
 // Activity is used by pop to map your activities database table to your go code.
@@ -96,4 +99,19 @@ func IsSameActivity(a1, a2 *Activity) bool {
 		a1.MovingTime == a2.MovingTime &&
 		a1.ElapsedTime == a2.ElapsedTime
 
+}
+
+// ParseStravaActivity converts from swagger.SummaryActivity to models.User
+func ParseStravaActivity(stravaActivity swagger.SummaryActivity, user User) *Activity {
+	return &Activity{
+		UserID:      user.ID,
+		Provider:    user.Provider,
+		ProviderID:  strconv.Itoa(int(stravaActivity.Id)),
+		Name:        stravaActivity.Name,
+		Type:        fmt.Sprintf("%v", *stravaActivity.Type_),
+		Datetime:    stravaActivity.StartDateLocal,
+		Distance:    int(stravaActivity.Distance),
+		MovingTime:  int(stravaActivity.MovingTime),
+		ElapsedTime: int(stravaActivity.ElapsedTime),
+	}
 }

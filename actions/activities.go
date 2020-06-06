@@ -3,7 +3,6 @@ package actions
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop/v5"
@@ -266,31 +265,17 @@ func (v ActivitiesResource) Destroy(c buffalo.Context) error {
 	}).Respond(c)
 }
 
-func parseStravaActivity(stravaActivity swagger.SummaryActivity, user models.User) *models.Activity {
-	return &models.Activity{
-		UserID:      user.ID,
-		Provider:    user.Provider,
-		ProviderID:  strconv.Itoa(int(stravaActivity.Id)),
-		Name:        stravaActivity.Name,
-		Type:        fmt.Sprintf("%v", *stravaActivity.Type_),
-		Datetime:    stravaActivity.StartDateLocal,
-		Distance:    int(stravaActivity.Distance),
-		MovingTime:  int(stravaActivity.MovingTime),
-		ElapsedTime: int(stravaActivity.ElapsedTime),
-	}
-}
-
-// SyncLastActivitiesHandler will import all activities from the provider and populate the database
+// SyncLastActivitiesHandler will import all users' latest activities from the provider and populate the database
 func SyncLastActivitiesHandler(c buffalo.Context) error {
-	return syncActivitiesHandler(c, stravaclient.FetchLatestActivities)
+	return syncAllUsersActivitiesHandler(c, stravaclient.FetchLatestActivities)
 }
 
-// SyncAllActivitiesHandler will import all activities from the provider and populate the database
+// SyncAllActivitiesHandler will import all users' all activities from the provider and populate the database
 func SyncAllActivitiesHandler(c buffalo.Context) error {
-	return syncActivitiesHandler(c, stravaclient.FetchAllActivities)
+	return syncAllUsersActivitiesHandler(c, stravaclient.FetchAllActivities)
 }
 
-func syncActivitiesHandler(c buffalo.Context, syncFunction func(stravaAccessToken string) ([]swagger.SummaryActivity, error)) error {
+func syncAllUsersActivitiesHandler(c buffalo.Context, syncFunction func(stravaAccessToken string) ([]swagger.SummaryActivity, error)) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
@@ -304,35 +289,13 @@ func syncActivitiesHandler(c buffalo.Context, syncFunction func(stravaAccessToke
 	}
 
 	for _, user := range *users {
-		if err := RefreshAccessToken(tx, &user); err != nil {
+		if err := user.SyncActivities(tx, syncFunction); err != nil {
 			c.Logger().Error(err)
+			c.Flash().Add("warning", err.Error())
 			continue
 		}
-
-		stravaActivities, err := syncFunction(user.AccessToken)
-		if err != nil {
-			c.Logger().Errorf("Could not fetch latestActivities for user %s. %w", user.Name, err)
-			continue
-		}
-
-		c.Logger().Debugf("Number o activities to sync: %v", len(stravaActivities))
-		for _, stravaActivity := range stravaActivities {
-			activity := parseStravaActivity(stravaActivity, user)
-
-			if err := activity.CreateOrUpdate(tx); err != nil {
-				c.Logger().Errorf("Error processing activity %s for user %s. %w", activity.ProviderID, user.Name, err)
-			}
-
-			// t, _ := tx.NewTransaction()
-			// if err := tx.Transaction(activity.CreateOrUpdate); err != nil {
-			// 	c.Logger().Errorf("Error processing activity %s for user %s. %w", activity.ProviderID, user.Name, err)
-			// }
-
-		}
-
 	}
 
-	// return c.Redirect(http.StatusTemporaryRedirect, "/users")
-	return c.Render(http.StatusOK, r.String("OK"))
-
+	return c.Redirect(http.StatusTemporaryRedirect, "/users")
+	// return c.Render(http.StatusOK, r.String("OK"))
 }

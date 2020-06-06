@@ -10,6 +10,8 @@ import (
 	"github.com/markbates/goth"
 
 	"github.com/tcarreira/roaw2020/models"
+	stravaclient "github.com/tcarreira/roaw2020/strava_client"
+	"github.com/tcarreira/roaw2020/strava_client/swagger"
 )
 
 // ListUsersHandler gets all Users. This function is mapped to the path
@@ -151,25 +153,36 @@ func ListUserActivitiesHandler(c buffalo.Context) error {
 	}).Respond(c)
 }
 
-// RefreshAccessToken will refresh user's accessToken and refreshToken auth
-func RefreshAccessToken(tx *pop.Connection, user *models.User) error {
-	// get Strava Auth provider
-	provider, ok := goth.GetProviders()[user.Provider]
+// SyncUserLatestActivitiesHandler will import user's latest activities from the provider and populate the database
+func SyncUserLatestActivitiesHandler(c buffalo.Context) error {
+	return syncUserActivitiesHandler(c, stravaclient.FetchLatestActivities)
+}
+
+// SyncUserAllActivitiesHandler will import user's all activities from the provider and populate the database
+func SyncUserAllActivitiesHandler(c buffalo.Context) error {
+	return syncUserActivitiesHandler(c, stravaclient.FetchLatestActivities)
+}
+
+func syncUserActivitiesHandler(c buffalo.Context, syncFunction func(stravaAccessToken string) ([]swagger.SummaryActivity, error)) error {
+	// Get the DB connection from the context
+	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return fmt.Errorf("%s connector is having a problem. Contact the admin", user.Provider)
+		return fmt.Errorf("no transaction found")
 	}
 
-	// refresh auth tokens
-	newTokens, err := provider.RefreshToken(user.RefreshToken)
-	if err != nil {
-		return fmt.Errorf("The accessToken for user '%s' could not be refreshed. %w", user.Name, err)
+	user := &models.User{}
+	// To find the User the parameter user_id is used.
+	if err := tx.Find(user, c.Param("user_id")); err != nil {
+		return c.Error(http.StatusNotFound, err)
 	}
 
-	if user.AccessToken != newTokens.AccessToken {
-		user.AccessToken = newTokens.AccessToken
-		user.RefreshToken = newTokens.RefreshToken
-		err = tx.Save(user)
+	if err := user.SyncActivities(tx, syncFunction); err != nil {
+		c.Logger().Error(err)
+		c.Flash().Add("warning", err.Error())
+	} else {
+		c.Flash().Add("success", "Syncronized")
 	}
 
-	return err
+	return c.Redirect(http.StatusTemporaryRedirect, "/users/"+c.Param("user_id"))
+	// return c.Render(http.StatusOK, r.String("OK"))
 }

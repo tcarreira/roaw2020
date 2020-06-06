@@ -2,6 +2,8 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gobuffalo/nulls"
@@ -9,6 +11,8 @@ import (
 	"github.com/gobuffalo/validate/v3"
 	"github.com/gobuffalo/validate/v3/validators"
 	"github.com/gofrs/uuid"
+	"github.com/markbates/goth"
+	"github.com/tcarreira/roaw2020/strava_client/swagger"
 )
 
 // User is used by pop to map your users database table to your go code.
@@ -60,4 +64,53 @@ func (u *User) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
 // This method is not required and may be deleted.
 func (u *User) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
+}
+
+// RefreshAccessToken will refresh user's accessToken and refreshToken auth
+func (u *User) RefreshAccessToken(tx *pop.Connection) error {
+	// get Strava Auth provider
+	provider, ok := goth.GetProviders()[u.Provider]
+	if !ok {
+		return fmt.Errorf("%s connector is having a problem. Contact the admin", u.Provider)
+	}
+
+	// refresh auth tokens
+	newTokens, err := provider.RefreshToken(u.RefreshToken)
+	if err != nil {
+		return fmt.Errorf("The accessToken for user '%s' could not be refreshed. %w", u.Name, err)
+	}
+
+	if u.AccessToken != newTokens.AccessToken {
+		u.AccessToken = newTokens.AccessToken
+		u.RefreshToken = newTokens.RefreshToken
+		err = tx.Save(u)
+	}
+
+	return err
+}
+
+// SyncActivities will fetch provider's activities and store them on database
+func (u *User) SyncActivities(tx *pop.Connection, syncFunction func(stravaAccessToken string) ([]swagger.SummaryActivity, error)) error {
+	if err := u.RefreshAccessToken(tx); err != nil {
+		return err
+	}
+
+	stravaActivities, err := syncFunction(u.AccessToken)
+	if err != nil {
+		return fmt.Errorf("Could not fetch latestActivities for user %s. %w", u.Name, err)
+	}
+
+	var errorStrings []string
+	for _, stravaActivity := range stravaActivities {
+		activity := ParseStravaActivity(stravaActivity, *u)
+
+		if err := activity.CreateOrUpdate(tx); err != nil {
+			errorStrings = append(errorStrings, activity.ProviderID)
+		}
+	}
+
+	if len(errorStrings) > 0 {
+		return fmt.Errorf("Error processing activities: %s", strings.Join(errorStrings, ", "))
+	}
+	return nil
 }
