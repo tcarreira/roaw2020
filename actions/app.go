@@ -69,7 +69,8 @@ func App() *buffalo.App {
 		app.Use(Authorize)
 
 		app.Middleware.Skip(Authorize, HomeHandler)
-		app.GET("/", HomeHandler)
+		// app.GET("/", HomeHandler)
+		app.GET("/", DashboardHandler)
 
 		// /auth/ endpoints
 		authRoutes(app)
@@ -86,6 +87,8 @@ func App() *buffalo.App {
 		users.GET("/{user_id}/activities", ListUserActivitiesHandler)
 		users.GET("/{user_id}/sync", SyncUserLatestActivitiesHandler)
 		users.GET("/{user_id}/sync-all", SyncUserAllActivitiesHandler)
+
+		app.GET("/dashboard", DashboardHandler)
 
 		app.GET("/info", getInfo) // XXX: remove this in production
 

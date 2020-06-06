@@ -1,0 +1,56 @@
+<div class="py-4 mb-2">
+    <h3 class="d-inline-block">Dashboard</h3>
+</div>
+
+<div class="row">
+    <div class="col-sm-6 col-lg-4">
+        <table class="table table-striped">
+            <thead class="thead-light text-center">
+                <th colspan=4>Total Distance (Km)</th>
+            </thead>
+            <tbody>
+            <%= for (i, row) in totalDistance { %>
+                <tr class="<%= convertPodiumClass(i) %>">
+                    <td class="align-middle text-center">#<%= i+1 %></td>
+                    <td class="align-middle text-center"><%= row.User %></td>
+                    <td class="align-middle text-center"><%= row.Distance %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-sm-6 col-lg-4">
+        <table class="table table-striped">
+            <thead class="thead-light text-center">
+                <th colspan=4>Activity Count</th>
+            </thead>
+            <tbody>
+            <%= for (i, row) in totalCount { %>
+                <tr class="<%= convertPodiumClass(i) %>">
+                    <td class="align-middle text-center">#<%= i+1 %></td>
+                    <td class="align-middle text-center"><%= row.User %></td>
+                    <td class="align-middle text-center"><%= row.Count %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-sm-6 col-lg-4">
+        <table class="table table-striped">
+            <thead class="thead-light text-center">
+                <th colspan=4>Total Time</th>
+            </thead>
+            <tbody>
+            <%= for (i, row) in totalDuration { %>
+                <tr class="<%= convertPodiumClass(i) %>">
+                    <td class="align-middle text-center">#<%= i+1 %></td>
+                    <td class="align-middle text-center"><%= row.User %></td>
+                    <td class="align-middle text-center"><%= secondsToHuman(row.Duration) %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
