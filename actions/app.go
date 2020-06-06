@@ -83,7 +83,7 @@ func App() *buffalo.App {
 		users.GET("", ListUsersHandler)
 		users.GET("/{user_id}", ShowUsersHandler)
 		users.GET("/{user_id}/refresh", RefreshUsersHandler)
-		users.GET("/{user_id}/activities", FetchActivitiesHandler)
+		users.GET("/{user_id}/activities", ListUserActivitiesHandler)
 
 		app.GET("/info", getInfo) // XXX: remove this in production
 

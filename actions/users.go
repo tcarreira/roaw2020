@@ -10,8 +10,6 @@ import (
 	"github.com/markbates/goth"
 
 	"github.com/tcarreira/roaw2020/models"
-	stravaclient "github.com/tcarreira/roaw2020/strava_client"
-	"github.com/tcarreira/roaw2020/strava_client/swagger"
 )
 
 // ListUsersHandler gets all Users. This function is mapped to the path
@@ -117,8 +115,8 @@ func RefreshUsersHandler(c buffalo.Context) error {
 	return c.Redirect(http.StatusTemporaryRedirect, "/users")
 }
 
-// FetchActivitiesHandler will import all activities from the provider and show them
-func FetchActivitiesHandler(c buffalo.Context) error {
+// ListUserActivitiesHandler will list all activities (does NOT call the provider)
+func ListUserActivitiesHandler(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
@@ -131,23 +129,25 @@ func FetchActivitiesHandler(c buffalo.Context) error {
 		return c.Error(http.StatusNotFound, err)
 	}
 
-	allActivities, err := stravaclient.FetchAllActivities(user.AccessToken)
-	if err != nil {
+	activities := &models.Activities{}
+	// To find the User the parameter user_id is used.
+	if err := tx.Where("user_id = ?", c.Param("user_id")).All(activities); err != nil {
 		c.Flash().Add("error", fmt.Sprintf("Could not fetch activities (%s)", err))
+		c.Logger().Error(err)
 		return c.Redirect(http.StatusTemporaryRedirect, "/users/"+c.Param("user_id"))
 	}
 
 	return responder.Wants("html", func(c buffalo.Context) error {
-		c.Set("activityType", func(a swagger.SummaryActivity) string {
-			return string(*a.Type_)
+		c.Set("meters2km", func(distance int) string {
+			return fmt.Sprintf("%.2f", float64(distance)/1000.0)
 		})
 		c.Set("user", user)
-		c.Set("activities", allActivities)
+		c.Set("activities", activities)
 		return c.Render(http.StatusOK, r.HTML("/users/activities.plush.html"))
 	}).Wants("json", func(c buffalo.Context) error {
-		return c.Render(http.StatusOK, r.JSON(allActivities))
+		return c.Render(http.StatusOK, r.JSON(activities))
 	}).Wants("xml", func(c buffalo.Context) error {
-		return c.Render(http.StatusOK, r.XML(allActivities))
+		return c.Render(http.StatusOK, r.XML(activities))
 	}).Respond(c)
 }
 

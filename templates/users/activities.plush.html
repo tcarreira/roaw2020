@@ -17,23 +17,19 @@ len: <%= len(activities) %>
     <th>Distance</th> 
     <th>MovingTime</th>
     <th>ElapsedTime</th>
-    <!-- <th>StartDate</th> -->
     <th>StartDateLocal</th>
-    <th>Timezone</th>
   
   </thead>
   <tbody>
     <%= for (activity) in activities { %>
-      <tr>
-        <td class="align-middle"><a href="https://www.strava.com/activities/<%= activity.Id %>" target=_blank><%= activity.Id %></a></td>
-        <td class="align-middle"><%= activityType(activity) %></td>
+      <tr <%= if (activity.Type != "Run") { %> style="text-decoration: line-through;" <% } %>>
+        <td class="align-middle"><a href="https://www.strava.com/activities/<%= activity.ProviderID %>" target=_blank><%= activity.ProviderID %></a></td>
+        <td class="align-middle"><%= activity.Type %></td>
         <td class="align-middle"><%= activity.Name %></td>
-        <td class="align-middle"><%= activity.Distance %></td>
+        <td class="align-middle"><%= meters2km(activity.Distance) %></td>
         <td class="align-middle"><%= activity.MovingTime %></td>
         <td class="align-middle"><%= activity.ElapsedTime %></td>
-        <!-- <td class="align-middle"><%= activity.StartDate %></td> -->
-        <td class="align-middle"><%= activity.StartDateLocal %></td>
-        <td class="align-middle"><%= activity.Timezone %></td>
+        <td class="align-middle"><%= activity.Datetime.Format("2006-01-02 15:04") %></td>
       </tr>
     <% } %>
   </tbody>
