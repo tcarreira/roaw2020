@@ -52,7 +52,7 @@ func getAllUsersActivityCount(tx *pop.Connection) ([]userTotalActivityCount, err
 		"WHERE a.type IS NULL OR (a.type = 'Run' " +
 		"  AND a.datetime >= '2020-01-01' " +
 		"  AND a.datetime <  '2021-01-01' " +
-		"  AND a.duration >= 300 ) " +
+		"  AND a.elapsed_time >= 300 ) " +
 		"GROUP BY u.id " +
 		"ORDER BY count DESC"
 
