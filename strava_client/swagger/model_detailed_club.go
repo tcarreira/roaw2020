@@ -22,7 +22,7 @@ type DetailedClub struct {
 	CoverPhoto string `json:"cover_photo,omitempty"`
 	// URL to a ~360x176  pixel cover photo.
 	CoverPhotoSmall string `json:"cover_photo_small,omitempty"`
-	SportType string `json:"sport_type,omitempty"`
+	SportType       string `json:"sport_type,omitempty"`
 	// The club's city.
 	City string `json:"city,omitempty"`
 	// The club's state or geographical region.

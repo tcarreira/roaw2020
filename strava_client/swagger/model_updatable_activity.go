@@ -17,7 +17,7 @@ type UpdatableActivity struct {
 	// The description of the activity
 	Description string `json:"description,omitempty"`
 	// The name of the activity
-	Name string `json:"name,omitempty"`
+	Name  string        `json:"name,omitempty"`
 	Type_ *ActivityType `json:"type,omitempty"`
 	// Identifier for the gear associated with the activity. ‘none’ clears gear from activity
 	GearId string `json:"gear_id,omitempty"`
