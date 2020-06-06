@@ -7,7 +7,7 @@ create_table("activities") {
 	t.Column("type", "string", {})
 	t.Column("datetime", "timestamp", {})
 	t.Column("distance", "integer", {})
-	t.Column("moving_time", "string", {})
-	t.Column("elapsed_time", "string", {})
+	t.Column("moving_time", "integer", {})
+	t.Column("elapsed_time", "integer", {})
 	t.Timestamps()
 }

@@ -74,7 +74,10 @@ func App() *buffalo.App {
 		// /auth/ endpoints
 		authRoutes(app)
 
-		app.Resource("/activities", ActivitiesResource{})
+		activities := app.Group("/activities")
+		activities.GET("/sync-all", SyncAllActivitiesHandler)
+		activities.GET("/sync", SyncLastActivitiesHandler)
+		activities.Resource("", ActivitiesResource{})
 
 		users := app.Group("/users")
 		users.GET("", ListUsersHandler)

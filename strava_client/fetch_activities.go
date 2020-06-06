@@ -31,8 +31,8 @@ func NewStravaAPI(stravaAccessToken string) *StravaAPI {
 	return s
 }
 
-// FetchActivitiesSinglePage will fetch a single page
-func (s *StravaAPI) FetchActivitiesSinglePage(page int) ([]swagger.SummaryActivity, error) {
+// fetchActivitiesSinglePage will fetch a single page
+func (s *StravaAPI) fetchActivitiesSinglePage(page int) ([]swagger.SummaryActivity, error) {
 	s.opts.Page = optional.NewInt32(int32(page))
 	activities, _, err := s.client.ActivitiesApi.GetLoggedInAthleteActivities(s.ctx, s.opts)
 
@@ -46,7 +46,7 @@ func FetchAllActivities(stravaAccessToken string) ([]swagger.SummaryActivity, er
 
 	var allActivities []swagger.SummaryActivity
 	for i := 1; ; i++ {
-		activities, err := stravaAPI.FetchActivitiesSinglePage(i)
+		activities, err := stravaAPI.fetchActivitiesSinglePage(i)
 
 		if err != nil {
 			return []swagger.SummaryActivity{}, err
@@ -62,4 +62,13 @@ func FetchAllActivities(stravaAccessToken string) ([]swagger.SummaryActivity, er
 	}
 
 	return allActivities, nil
+}
+
+// FetchLatestActivities will fetch and return the latest N activities (N defined in StravaAPI.opts)
+func FetchLatestActivities(stravaAccessToken string) ([]swagger.SummaryActivity, error) {
+	stravaAPI := NewStravaAPI(stravaAccessToken)
+
+	activities, err := stravaAPI.fetchActivitiesSinglePage(1)
+
+	return activities, err
 }

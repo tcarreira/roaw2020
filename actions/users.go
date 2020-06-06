@@ -84,14 +84,13 @@ func RefreshUsersHandler(c buffalo.Context) error {
 		return fmt.Errorf("no transaction found")
 	}
 
-	// Allocate an empty User
 	user := &models.User{}
-
 	// To find the User the parameter user_id is used.
 	if err := tx.Find(user, c.Param("user_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
+	// get Strava Auth provider
 	stravaProvider, ok := goth.GetProviders()[user.Provider]
 	if !ok {
 		c.Flash().Add("danger", fmt.Sprintf("%s connector is having a problem. Contact the admin", user.Provider))
@@ -99,26 +98,28 @@ func RefreshUsersHandler(c buffalo.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/users")
 	}
 
-	newToken, err := stravaProvider.RefreshToken(user.RefreshToken)
+	// refresh auth tokens
+	newTokens, err := stravaProvider.RefreshToken(user.RefreshToken)
 	if err != nil {
 		c.Flash().Add("danger", "The token could not be refreshed")
 		return c.Redirect(http.StatusTemporaryRedirect, "/users")
 	}
 
-	if user.AccessToken == newToken.AccessToken {
-		c.Flash().Add("success", fmt.Sprintf("Token was not renewed. Expires at %+v", newToken.Expiry))
+	if user.AccessToken == newTokens.AccessToken {
+		c.Flash().Add("success", fmt.Sprintf("Token was not renewed. Expires at %+v", newTokens.Expiry))
 	} else {
-		user.AccessToken = newToken.AccessToken
-		user.RefreshToken = newToken.RefreshToken
+		user.AccessToken = newTokens.AccessToken
+		user.RefreshToken = newTokens.RefreshToken
 		tx.Save(user)
-		c.Flash().Add("success", fmt.Sprintf("New token (%s) expires at %+v", newToken.AccessToken, newToken.Expiry))
+		c.Flash().Add("success", fmt.Sprintf("New token for user %s expires at %+v", user.Name, newTokens.Expiry))
 	}
 
 	return c.Redirect(http.StatusTemporaryRedirect, "/users")
 }
 
-// FetchActivitiesHandler will import all activities from the provider and populate the database
+// FetchActivitiesHandler will import all activities from the provider and show them
 func FetchActivitiesHandler(c buffalo.Context) error {
+	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
 		return fmt.Errorf("no transaction found")
@@ -148,4 +149,27 @@ func FetchActivitiesHandler(c buffalo.Context) error {
 	}).Wants("xml", func(c buffalo.Context) error {
 		return c.Render(http.StatusOK, r.XML(allActivities))
 	}).Respond(c)
+}
+
+// RefreshAccessToken will refresh user's accessToken and refreshToken auth
+func RefreshAccessToken(tx *pop.Connection, user *models.User) error {
+	// get Strava Auth provider
+	provider, ok := goth.GetProviders()[user.Provider]
+	if !ok {
+		return fmt.Errorf("%s connector is having a problem. Contact the admin", user.Provider)
+	}
+
+	// refresh auth tokens
+	newTokens, err := provider.RefreshToken(user.RefreshToken)
+	if err != nil {
+		return fmt.Errorf("The accessToken for user '%s' could not be refreshed. %w", user.Name, err)
+	}
+
+	if user.AccessToken != newTokens.AccessToken {
+		user.AccessToken = newTokens.AccessToken
+		user.RefreshToken = newTokens.RefreshToken
+		err = tx.Save(user)
+	}
+
+	return err
 }
