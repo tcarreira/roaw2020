@@ -68,7 +68,7 @@ func App() *buffalo.App {
 		app.Use(SetCurrentUser)
 		app.Use(Authorize)
 
-		app.Middleware.Skip(Authorize, HomeHandler)
+		app.Middleware.Skip(Authorize, DashboardHandler)
 		// app.GET("/", HomeHandler)
 		app.GET("/", DashboardHandler)
 
