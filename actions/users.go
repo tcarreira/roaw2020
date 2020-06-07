@@ -160,7 +160,7 @@ func SyncUserLatestActivitiesHandler(c buffalo.Context) error {
 
 // SyncUserAllActivitiesHandler will import user's all activities from the provider and populate the database
 func SyncUserAllActivitiesHandler(c buffalo.Context) error {
-	return syncUserActivitiesHandler(c, stravaclient.FetchLatestActivities)
+	return syncUserActivitiesHandler(c, stravaclient.FetchAllActivities)
 }
 
 func syncUserActivitiesHandler(c buffalo.Context, syncFunction func(stravaAccessToken string) ([]swagger.SummaryActivity, error)) error {
