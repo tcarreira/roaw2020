@@ -13,6 +13,7 @@ import (
 	"github.com/markbates/goth/providers/strava"
 	"github.com/pkg/errors"
 	"github.com/tcarreira/roaw2020/models"
+	stravaclient "github.com/tcarreira/roaw2020/strava_client"
 )
 
 func init() {
@@ -40,6 +41,7 @@ func AuthCallback(c buffalo.Context) error {
 	}
 	u := &models.User{}
 	if exists {
+
 		if err = q.First(u); err != nil {
 			return errors.WithStack(err)
 		}
@@ -62,6 +64,14 @@ func AuthCallback(c buffalo.Context) error {
 	}
 
 	c.Flash().Add("success", "You have been logged in")
+
+	// if first login from this user
+	if !exists {
+		if err := u.SyncActivities(tx, stravaclient.FetchAllActivities); err != nil {
+			c.Logger().Error(err)
+		}
+	}
+
 	return c.Redirect(302, "/")
 }
 
