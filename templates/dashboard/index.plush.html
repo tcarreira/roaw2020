@@ -1,10 +1,19 @@
-<div class="py-4 mb-2">
-    <h3 class="d-inline-block">Dashboard</h3>
+
+
+<div class="row py-2">
+    <div class="col-7">
+        <h4><%= appLongName %></h4>
+    </div>
+    <div class="col-5">
+        <%= if (current_user_id) { %>
+            <%= linkTo(userActivitiesPath({ user_id: current_user_id }), {class: "btn btn-outline-primary float-right", body: "My Activities"}) %>
+        <% } %> 
+    </div>
 </div>
 
 <div class="row">
-    <div class="col-sm-6 col-lg-4">
-        <table class="table table-striped">
+    <div class="col-sm-12 col-md-4">
+        <table class="table table-bordered table-striped">
             <thead class="thead-light text-center">
                 <th colspan=4>Total Distance (Km)</th>
             </thead>
@@ -20,8 +29,8 @@
         </table>
     </div>
 
-    <div class="col-sm-6 col-lg-4">
-        <table class="table table-striped">
+    <div class="col-sm-12 col-md-4">
+        <table class="table table-bordered table-striped">
             <thead class="thead-light text-center">
                 <th colspan=4>Activity Count</th>
             </thead>
@@ -37,8 +46,8 @@
         </table>
     </div>
 
-    <div class="col-sm-6 col-lg-4">
-        <table class="table table-striped">
+    <div class="col-sm-12 col-md-4">
+        <table class="table table-bordered table-striped">
             <thead class="thead-light text-center">
                 <th colspan=4>Total Time</th>
             </thead>
