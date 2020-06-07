@@ -42,6 +42,7 @@ var T *i18n.Translator
 func App() *buffalo.App {
 	if app == nil {
 		buffaloAppOptions := buffalo.NewOptions()
+		buffaloAppOptions.Name = "ROAW 2020"
 		buffaloAppOptions.SessionName = "_roaw2020_session"
 
 		app = buffalo.New(buffaloAppOptions)
