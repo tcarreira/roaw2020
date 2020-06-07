@@ -41,11 +41,10 @@ var T *i18n.Translator
 // declared after it to never be called.
 func App() *buffalo.App {
 	if app == nil {
-		app = buffalo.New(buffalo.Options{
-			Env:         ENV,
-			Host:        envy.Get("HOST", fmt.Sprintf("http://127.0.0.1:%s", envy.Get("PORT", "3000"))),
-			SessionName: "_roaw2020_session",
-		})
+		buffaloAppOptions := buffalo.NewOptions()
+		buffaloAppOptions.SessionName = "_roaw2020_session"
+
+		app = buffalo.New(buffaloAppOptions)
 
 		// Automatically redirect to SSL
 		app.Use(forceSSL())
