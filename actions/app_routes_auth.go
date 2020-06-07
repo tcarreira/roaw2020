@@ -6,8 +6,8 @@ import (
 )
 
 // authRoutes declaration of all /auth endpoints
-func authRoutes(app *buffalo.App) {
-	auth := app.Group("/auth")
+func authRoutes(app *buffalo.App, path string) {
+	auth := app.Group(path)
 
 	authLogout := auth.Group("/logout")
 	authLogout.GET("", AuthDestroy)
