@@ -1,6 +1,9 @@
 package actions
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/buffalo/render"
 	"github.com/gobuffalo/packr/v2"
@@ -9,6 +12,14 @@ import (
 
 var r *render.Engine
 var assetsBox = packr.New("app:assets", "../public")
+
+func weekNumbersList() string {
+	list := make([]string, 53)
+	for w := 0; w < 53; w++ {
+		list[w] = fmt.Sprintf("%d", w)
+	}
+	return strings.Join(list, ", ")
+}
 
 func init() {
 	r = render.New(render.Options{
@@ -21,10 +32,11 @@ func init() {
 
 		// Add template helpers here:
 		Helpers: render.Helpers{
-			"appShortName": "ROAW",
-			"appLongName":  "Run Once a Week",
-			"appFullName":  "ROAW - Run Once a Week",
-			"isLoggedIn":   isLoggedIn,
+			"appShortName":    "ROAW",
+			"appLongName":     "Run Once a Week",
+			"appFullName":     "ROAW - Run Once a Week",
+			"isLoggedIn":      isLoggedIn,
+			"weekNumbersList": weekNumbersList,
 			// "isActive": func(name string, help plush.HelperContext) string {
 			// 	if cr, ok := help.Value("current_path").(string); ok {
 			// 		if strings.HasPrefix(cr, name) {

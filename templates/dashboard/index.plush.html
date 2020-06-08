@@ -63,3 +63,82 @@
         </table>
     </div>
 </div>
+
+
+<!-- <div class="row">
+    <div class="col-12 p-3">
+        <canvas id="chart1"></canvas>
+    </div>
+</div> -->
+
+
+<script>
+    var ctx = document.getElementById('chart1').getContext('2d');
+
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [<%= weekNumbersList() %>],
+            datasets: [
+            <%= for (user, stats) in weeklyStats { %>
+                {
+                    label: '<%= user %>',
+                    data: [{x: 1,y: 12},{x:11,y:15}],
+                    fill: false,
+                    backgroundColor: "rgb(255, 99, 132)",
+                    borderColor: "rgb(255, 99, 132)",
+                    borderWidth: 1
+                },
+            <% } %>
+            ]
+        },
+        options: {
+            aspectRatio: 5,
+            responsive: true,
+            title: {
+                display: true,
+                text: 'Test'
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Month'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Value'
+                    },
+
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+</script>
+
+<script>
+$.get( 
+    {
+        url: "/dashboard/weekly/distances", 
+        headers: {"Content-type": "application/json"} 
+    }, 
+    function( data ) {
+        console.log(data);
+    }
+);
+</script>

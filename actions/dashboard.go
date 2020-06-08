@@ -146,6 +146,11 @@ func DashboardHandler(c buffalo.Context) error {
 		c.Flash().Add("error", fmt.Sprintf("Error fetching total duration data: %v", err))
 	}
 
+	weeklyStats, err := getWeeklyDistanceStats(tx)
+	if err != nil {
+		c.Flash().Add("error", fmt.Sprintf("Error fetching weekly stats: %v", err))
+	}
+
 	return responder.Wants("html", func(c buffalo.Context) error {
 		c.Set("convertPodiumClass", convertPodiumClass)
 		c.Set("secondsToHuman", secondsToHuman)
@@ -156,11 +161,83 @@ func DashboardHandler(c buffalo.Context) error {
 		c.Set("totalCount", allUsersActivityCount)
 		c.Set("totalDuration", allUsersTotalDuration)
 
+		c.Set("weeklyStats", weeklyStats)
+
 		return c.Render(http.StatusOK, r.HTML("/dashboard/index.plush.html"))
 	}).Wants("json", func(c buffalo.Context) error {
 		return c.Render(200, r.JSON(allUsersTotalDistance))
 	}).Wants("xml", func(c buffalo.Context) error {
 		return c.Render(200, r.XML(allUsersTotalDistance))
+	}).Respond(c)
+
+}
+
+type weekDistance struct {
+	Week     int `json:"week" db:"week"`
+	Distance int `json:"distance" db:"distance"`
+}
+
+// map user to struct
+type weeklyDistanceStats map[string][]weekDistance
+
+func getWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
+	queryString := "SELECT " +
+		"  COALESCE(EXTRACT(WEEK FROM a.datetime),0) AS week, " +
+		"  u.name as user, " +
+		"  SUM(COALESCE(a.distance,0))/1000 as distance " +
+		"FROM users u " +
+		"  LEFT JOIN activities a ON a.user_id = u.id " +
+		"WHERE a.type IS NULL OR (a.type = 'Run' " +
+		"  AND a.datetime >= '2020-01-01' " +
+		"  AND a.datetime <  '2021-01-01' ) " +
+		"GROUP BY u.id, week " +
+		"ORDER BY week ASC, u.id ASC"
+
+	data := []struct {
+		Week     int    `json:"week" db:"week"`
+		User     string `json:"user" db:"user"`
+		Distance int    `json:"distance" db:"distance"`
+	}{}
+
+	err := tx.RawQuery(queryString).All(&data)
+
+	returnData := weeklyDistanceStats{}
+	for _, row := range data {
+		_, ok := returnData[row.User]
+		if !ok {
+			returnData[row.User] = []weekDistance{}
+		}
+		returnData[row.User] = append(returnData[row.User], weekDistance{
+			Week:     row.Week,
+			Distance: row.Distance,
+		})
+	}
+
+	return returnData, err
+
+}
+
+// WeeklyDistanceStatsHandler shows a weekly stats by user
+func WeeklyDistanceStatsHandler(c buffalo.Context) error {
+	// Get the DB connection from the context
+	tx, ok := c.Value("tx").(*pop.Connection)
+	if !ok {
+		return fmt.Errorf("no transaction found")
+	}
+
+	weeklyStats, err := getWeeklyDistanceStats(tx)
+	if err != nil {
+		c.Flash().Add("error", fmt.Sprintf("Error fetching weekly stats: %v", err))
+	}
+
+	return responder.Wants("html", func(c buffalo.Context) error {
+		c.Set("weeklyStats", weeklyStats)
+
+		return c.Render(http.StatusOK, r.HTML("/dashboard/index.plush.html"))
+	}).Wants("json", func(c buffalo.Context) error {
+		return c.Render(200, r.JSON(weeklyStats))
+	}).Wants("xml", func(c buffalo.Context) error {
+		return c.Render(200, r.XML(weeklyStats))
 	}).Respond(c)
 
 }

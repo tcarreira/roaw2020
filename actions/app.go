@@ -90,9 +90,12 @@ func App() *buffalo.App {
 		users.GET("/{user_id}/sync", SyncUserLatestActivitiesHandler)
 		users.GET("/{user_id}/sync-all", SyncUserAllActivitiesHandler)
 
-		app.GET("/dashboard", DashboardHandler)
-
-		app.GET("/info", getInfo) // XXX: remove this in production
+		dashboard := app.Group("/dashboard")
+		dashboard.GET("", DashboardHandler)
+		dashboardWeekly := dashboard.Group("/weekly")
+		dashboardWeekly.GET("/distances", WeeklyDistanceStatsHandler)
+		dashboardWeekly.GET("/count", WeeklyDistanceStatsHandler)
+		dashboardWeekly.GET("/duration", WeeklyDistanceStatsHandler)
 
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
