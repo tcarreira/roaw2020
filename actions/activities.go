@@ -279,7 +279,7 @@ func syncAllUsersActivitiesHandler(c buffalo.Context, syncFunction func(stravaAc
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return fmt.Errorf("no transaction found")
+		return c.Error(http.StatusInternalServerError, fmt.Errorf("no transaction found"))
 	}
 
 	users := &models.Users{}

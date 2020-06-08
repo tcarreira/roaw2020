@@ -1,0 +1,167 @@
+
+
+<div class="row py-2">
+    <div class="col-7">
+        <h4><%= appLongName %></h4>
+    </div>
+    <div class="col-5">
+        <%= if (current_user_id) { %>
+            <%= linkTo(userActivitiesPath({ user_id: current_user_id }), {class: "btn btn-outline-primary float-right", body: "My Activities"}) %>
+        <% } %> 
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12 col-md-4">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-light text-center">
+                <th colspan=4>Total Distance (Km)</th>
+            </thead>
+            <tbody>
+            <%= for (i, row) in totalDistance { %>
+                <tr class="<%= convertPodiumClass(i) %>">
+                    <td class="align-middle text-center">#<%= i+1 %></td>
+                    <td class="align-middle text-center"><%= row.User %></td>
+                    <td class="align-middle text-center"><%= row.Distance %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-sm-12 col-md-4">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-light text-center">
+                <th colspan=4>Activity Count</th>
+            </thead>
+            <tbody>
+            <%= for (i, row) in totalCount { %>
+                <tr class="<%= convertPodiumClass(i) %>">
+                    <td class="align-middle text-center">#<%= i+1 %></td>
+                    <td class="align-middle text-center"><%= row.User %></td>
+                    <td class="align-middle text-center"><%= row.Count %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-sm-12 col-md-4">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-light text-center">
+                <th colspan=4>Total Time</th>
+            </thead>
+            <tbody>
+            <%= for (i, row) in totalDuration { %>
+                <tr class="<%= convertPodiumClass(i) %>">
+                    <td class="align-middle text-center">#<%= i+1 %></td>
+                    <td class="align-middle text-center"><%= row.User %></td>
+                    <td class="align-middle text-center"><%= secondsToHuman(row.Duration) %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12 p-3">
+        <canvas id="distance-chart"></canvas>
+    </div>
+</div>
+
+
+<script>
+    async function createWeeklyDistancesChart() {
+
+        const datasets = await getWeeklyDistancesDatasets()
+        console.log(datasets);
+
+        var ctx = document.getElementById('distance-chart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [...Array(54).keys()],
+                datasets: datasets
+            },
+            options: {
+                aspectRatio: 5,
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Weekly Distance'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Month'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value'
+                        },
+
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    }
+
+    async function getWeeklyDistancesDatasets(){
+        const response = await fetch("/dashboard/weekly/distances", {headers: {'Content-Type': 'application/json'}});
+        const userData = await response.json();
+        
+        console.log(userData)
+        var datasets = []
+
+        Object.keys(userData).forEach(function(user, idx) {
+            console.log(user, idx)
+            dataset = {
+                label: user,
+                data: userData[user],
+                fill: false,
+                backgroundColor: "rgb(255, 99, 132)",
+                borderColor: "rgb(255, 99, 132)",
+                borderWidth: 1
+            }
+        
+            console.log(user, dataset)
+
+            datasets.push(dataset)
+
+        });
+
+        return datasets
+    }
+
+    createWeeklyDistancesChart();
+</script>
+
+<!-- <script>
+$.get( 
+    {
+        url: "/dashboard/weekly/distances", 
+        headers: {"Content-type": "application/json"} 
+    }, 
+    function( data ) {
+        console.log(data);
+    }
+);
+</script> -->

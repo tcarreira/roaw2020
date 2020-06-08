@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"strings"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop/v5"
@@ -163,6 +164,9 @@ func DashboardHandler(c buffalo.Context) error {
 
 		c.Set("weeklyStats", weeklyStats)
 
+		if strings.Contains(c.Request().RequestURI, "beta") {
+			return c.Render(http.StatusOK, r.HTML("/dashboard/index-beta.plush.html"))
+		}
 		return c.Render(http.StatusOK, r.HTML("/dashboard/index.plush.html"))
 	}).Wants("json", func(c buffalo.Context) error {
 		return c.Render(200, r.JSON(allUsersTotalDistance))
@@ -173,8 +177,8 @@ func DashboardHandler(c buffalo.Context) error {
 }
 
 type weekDistance struct {
-	Week     int `json:"week" db:"week"`
-	Distance int `json:"distance" db:"distance"`
+	Week     int `json:"x" db:"week"`
+	Distance int `json:"y" db:"distance"`
 }
 
 // map user to struct
@@ -233,11 +237,11 @@ func WeeklyDistanceStatsHandler(c buffalo.Context) error {
 	return responder.Wants("html", func(c buffalo.Context) error {
 		c.Set("weeklyStats", weeklyStats)
 
-		return c.Render(http.StatusOK, r.HTML("/dashboard/index.plush.html"))
+		return c.Render(http.StatusOK, r.HTML("/dashboard/weekly-stats.plush.html"))
 	}).Wants("json", func(c buffalo.Context) error {
-		return c.Render(200, r.JSON(weeklyStats))
+		return c.Render(http.StatusOK, r.JSON(weeklyStats))
 	}).Wants("xml", func(c buffalo.Context) error {
-		return c.Render(200, r.XML(weeklyStats))
+		return c.Render(http.StatusOK, r.XML(weeklyStats))
 	}).Respond(c)
 
 }
