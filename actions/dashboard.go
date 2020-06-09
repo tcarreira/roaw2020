@@ -115,7 +115,7 @@ func secondsToHuman(duration int) string {
 	days := int(math.Floor(float64(duration) / 86400))
 
 	if days > 0 {
-		return fmt.Sprintf("%d days %02dh%02dm", days, hours, minutes)
+		return fmt.Sprintf("%dd %02dh%02dm", days, hours, minutes)
 	}
 	if hours > 0 {
 		return fmt.Sprintf("%02dh%02dm", hours, minutes)
