@@ -11,7 +11,7 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row py-3">
     <div class="col-sm-12 col-md-4">
         <table class="table table-bordered table-striped">
             <thead class="thead-light text-center">
@@ -65,47 +65,29 @@
 </div>
 
 
-<div class="row">
-    <div class="col-12 p-3">
+<div class="row p-3">
+    <div class="col-12">
+        <canvas id="cumulative-distance-chart"></canvas>
+    </div>
+</div>
+<div class="row p-3">
+    <div class="col-12">
         <canvas id="distance-chart"></canvas>
     </div>
 </div>
+
+
 
 <script src="/assets/images/color-hash.js"></script>
 
 <script>
     var colorHash = new ColorHash();
+    var xlabel = [];
+    for (i=0; i<54; i+=1){ xlabel.push(i); };
+ 
 
-    async function createWeeklyDistancesChart() {
-        var xlabel = []
-        for (i=0; i<54; i+=1){ xlabel.push(i); }
-
-        const datasets = await getWeeklyDistancesDatasets()
-
-        var ctx = document.getElementById('distance-chart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [...xlabel],
-                datasets: datasets
-            },
-            options: {
-                aspectRatio: 5,
-                scales: {
-                    yAxes: [{
-                        display: true,
-
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
-            }
-        });
-    }
-
-    async function getWeeklyDistancesDatasets(){
-        const response = await fetch("/dashboard/weekly/distances", {headers: {'Content-Type': 'application/json'}});
+    async function getDatasets(url){
+        const response = await fetch(url, {headers: {'Content-Type': 'application/json'}});
         const userData = await response.json();
         
         var datasets = []
@@ -119,25 +101,42 @@
                 borderColor: colorHash.hex(user),
                 borderWidth: 1,
             }
-        
             datasets.push(dataset)
-
         });
-
         return datasets
     }
 
-    createWeeklyDistancesChart();
-</script>
-
-<!-- <script>
-$.get( 
-    {
-        url: "/dashboard/weekly/distances", 
-        headers: {"Content-type": "application/json"} 
-    }, 
-    function( data ) {
-        console.log(data);
+    async function drawChart(elementId, title, xlabel, datasets) {
+        var ctx = document.getElementById(elementId).getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [...xlabel],
+                datasets: datasets
+            },
+            options: {
+                title: {display: true, text: title, position: "left"},
+                hover: {mode: 'nearest', intersect: false},
+                tooltips: {mode: 'nearest', intersect: false},
+                elements: {point: {radius: 1}},
+                aspectRatio: 5,
+                scales: {yAxes: [{ticks: {beginAtZero: true}}]}
+            }
+        }); 
     }
-);
-</script> -->
+
+
+    async function createWeeklyDistancesChart() {
+        const datasets = await getDatasets("/dashboard/weekly/distances")
+        drawChart('distance-chart', "Weekly Distance (Km)", xlabel, datasets) 
+    };
+
+
+    async function createCumulativeDistancesChart() {
+        const datasets = await getDatasets("/dashboard/weekly/cumulative-distances")
+        drawChart('cumulative-distance-chart', "Overall Distance (Km)", xlabel, datasets) 
+    };
+
+    createWeeklyDistancesChart();
+    createCumulativeDistancesChart();
+</script>

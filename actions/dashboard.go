@@ -221,6 +221,36 @@ func getWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
 
 }
 
+func getWeeklyCumulativeDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
+	distanceStats, err := getWeeklyDistanceStats(tx)
+	if err != nil {
+		return weeklyDistanceStats{}, nil
+	}
+
+	// everyone gets last week point
+	latestWeek := 0
+	for _, weeksDistances := range distanceStats {
+		if latestWeek < weeksDistances[len(weeksDistances)-1].Week {
+			latestWeek = weeksDistances[len(weeksDistances)-1].Week
+		}
+	}
+
+	// fill cumulative values
+	for user, weeksDistances := range distanceStats {
+		cumulative := 0
+		for idx, weekDistance := range weeksDistances {
+			cumulative += weekDistance.Distance
+			distanceStats[user][idx].Distance = cumulative
+		}
+		if weeksDistances[len(weeksDistances)-1].Week < latestWeek {
+			// everyone gets last week point
+			distanceStats[user] = append(weeksDistances, weekDistance{latestWeek, cumulative})
+		}
+	}
+
+	return distanceStats, nil
+}
+
 // WeeklyDistanceStatsHandler shows a weekly stats by user
 func WeeklyDistanceStatsHandler(c buffalo.Context) error {
 	// Get the DB connection from the context
@@ -230,6 +260,32 @@ func WeeklyDistanceStatsHandler(c buffalo.Context) error {
 	}
 
 	weeklyStats, err := getWeeklyDistanceStats(tx)
+	if err != nil {
+		c.Flash().Add("error", fmt.Sprintf("Error fetching weekly stats: %v", err))
+	}
+
+	return responder.Wants("html", func(c buffalo.Context) error {
+		c.Set("weeklyStats", weeklyStats)
+
+		return c.Render(http.StatusOK, r.HTML("/dashboard/weekly-stats.plush.html"))
+	}).Wants("json", func(c buffalo.Context) error {
+		return c.Render(http.StatusOK, r.JSON(weeklyStats))
+	}).Wants("xml", func(c buffalo.Context) error {
+		return c.Render(http.StatusOK, r.XML(weeklyStats))
+	}).Respond(c)
+
+}
+
+// WeeklyCumulativeDistanceStatsHandler shows a weekly stats by user
+func WeeklyCumulativeDistanceStatsHandler(c buffalo.Context) error {
+	// Get the DB connection from the context
+	tx, ok := c.Value("tx").(*pop.Connection)
+	if !ok {
+		return fmt.Errorf("no transaction found")
+	}
+
+	weeklyStats, err := getWeeklyCumulativeDistanceStats(tx)
+	// weeklyStats, err := getWeeklyCumulativeDistanceStats(tx)
 	if err != nil {
 		c.Flash().Add("error", fmt.Sprintf("Error fetching weekly stats: %v", err))
 	}
