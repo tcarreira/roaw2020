@@ -133,7 +133,7 @@ func ListUserActivitiesHandler(c buffalo.Context) error {
 
 	activities := &models.Activities{}
 	// To find the User the parameter user_id is used.
-	if err := tx.Where("user_id = ?", c.Param("user_id")).All(activities); err != nil {
+	if err := tx.Where("user_id = ?", c.Param("user_id")).Order("activities.datetime DESC").All(activities); err != nil {
 		c.Flash().Add("error", fmt.Sprintf("Could not fetch activities (%s)", err))
 		c.Logger().Error(err)
 		return c.Redirect(http.StatusTemporaryRedirect, "/users/"+c.Param("user_id"))
