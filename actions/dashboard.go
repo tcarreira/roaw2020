@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop/v5"
@@ -17,16 +20,30 @@ type userTotalDistanceData struct {
 	Distance int    `json:"distance" db:"distance"`
 }
 
+func parseThisNextYear(osEnv string) (string, string) {
+
+	thisYear, err := strconv.Atoi(osEnv)
+	if err != nil {
+		App().Logger.Errorf("%s could not be parsed int int.", osEnv)
+
+		currentYearInt := time.Now().Year()
+		return fmt.Sprintf("%d", currentYearInt), fmt.Sprintf("%d", currentYearInt+1)
+	}
+
+	return fmt.Sprintf("%d", thisYear), fmt.Sprintf("%d", thisYear+1)
+}
+
 func getAllUsersTotalDistance(tx *pop.Connection) ([]userTotalDistanceData, error) {
-	// XXX: hardcoded after/before
+	thisYear, nextYear := parseThisNextYear(os.Getenv("ROAW_2020"))
+
 	queryString := "SELECT " +
 		"  u.name as user, " +
 		"  SUM(COALESCE(a.distance,0))/1000 as distance " +
 		"FROM users u " +
 		"  LEFT JOIN activities a ON a.user_id = u.id " +
 		"WHERE a.type IS NULL OR (a.type = 'Run' " +
-		"  AND a.datetime >= '2020-01-01' " +
-		"  AND a.datetime <  '2021-01-01' ) " +
+		"  AND a.datetime >= '" + thisYear + "-01-01' " +
+		"  AND a.datetime <  '" + nextYear + "-01-01' ) " +
 		"GROUP BY u.id " +
 		"ORDER BY distance DESC"
 
@@ -44,15 +61,16 @@ type userTotalActivityCount struct {
 }
 
 func getAllUsersActivityCount(tx *pop.Connection) ([]userTotalActivityCount, error) {
-	// XXX: hardcoded after/before
+	thisYear, nextYear := parseThisNextYear(os.Getenv("ROAW_2020"))
+
 	queryString := "SELECT " +
 		"  u.name as user, " +
 		"  COUNT(a.distance) as count " +
 		"FROM users u " +
 		"  LEFT JOIN activities a ON a.user_id = u.id " +
 		"WHERE a.type IS NULL OR (a.type = 'Run' " +
-		"  AND a.datetime >= '2020-01-01' " +
-		"  AND a.datetime <  '2021-01-01' " +
+		"  AND a.datetime >= '" + thisYear + "-01-01' " +
+		"  AND a.datetime <  '" + nextYear + "-01-01' " +
 		"  AND a.elapsed_time >= 300 ) " +
 		"GROUP BY u.id " +
 		"ORDER BY count DESC"
@@ -71,15 +89,16 @@ type userTotalDuration struct {
 }
 
 func getAllUsersTotalDuration(tx *pop.Connection) ([]userTotalDuration, error) {
-	// XXX: hardcoded after/before
+	thisYear, nextYear := parseThisNextYear(os.Getenv("ROAW_2020"))
+
 	queryString := "SELECT " +
 		"  u.name as user, " +
 		"  SUM(COALESCE(a.elapsed_time,0)) as duration " +
 		"FROM users u " +
 		"  LEFT JOIN activities a ON a.user_id = u.id " +
 		"WHERE a.type IS NULL OR (a.type = 'Run' " +
-		"  AND a.datetime >= '2020-01-01' " +
-		"  AND a.datetime <  '2021-01-01' ) " +
+		"  AND a.datetime >= '" + thisYear + "-01-01' " +
+		"  AND a.datetime <  '" + nextYear + "-01-01' ) " +
 		"GROUP BY u.id " +
 		"ORDER BY duration DESC"
 
@@ -185,6 +204,8 @@ type weekDistance struct {
 type weeklyDistanceStats map[string][]weekDistance
 
 func getWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
+	thisYear, nextYear := parseThisNextYear(os.Getenv("ROAW_2020"))
+
 	queryString := "SELECT " +
 		"  COALESCE(EXTRACT(WEEK FROM a.datetime),0) AS week, " +
 		"  u.name as user, " +
@@ -192,8 +213,8 @@ func getWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
 		"FROM users u " +
 		"  LEFT JOIN activities a ON a.user_id = u.id " +
 		"WHERE a.type IS NULL OR (a.type = 'Run' " +
-		"  AND a.datetime >= '2020-01-01' " +
-		"  AND a.datetime <  '2021-01-01' ) " +
+		"  AND a.datetime >= '" + thisYear + "-01-01' " +
+		"  AND a.datetime <  '" + nextYear + "-01-01' ) " +
 		"GROUP BY u.id, week " +
 		"ORDER BY week ASC, u.id ASC"
 
