@@ -216,7 +216,7 @@ func getWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
 		"  AND a.datetime >= '" + thisYear + "-01-01' " +
 		"  AND a.datetime <  '" + nextYear + "-01-01' ) " +
 		"GROUP BY u.id, week " +
-		"ORDER BY week ASC, u.id ASC"
+		"ORDER BY u.name ASC, week ASC"
 
 	data := []struct {
 		Week     int    `json:"week" db:"week"`
@@ -235,7 +235,7 @@ func getWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
 		}
 
 		// fill empty weeks (until the last one)
-		for ; weekIdx < row.Week-1; weekIdx++ {
+		for ; weekIdx < row.Week; weekIdx++ {
 			returnData[row.User] = append(returnData[row.User], weekDistance{Week: weekIdx, Distance: 0})
 		}
 
