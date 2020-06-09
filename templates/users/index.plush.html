@@ -12,12 +12,6 @@
   <thead class="thead-light">
     <!-- <th>UUID</th> -->
     <th>Name</th>
-    <th>ProviderID</th>
-    <th>AccessToken</th>
-    <th>RefreshToken</th>
-    <!-- <th>AvatarURL</th>
-    <th>CreatedAt</th>
-    <th>UpdatedAt</th> -->
     <th>&nbsp;</th>
   </thead>
   <tbody>
@@ -25,16 +19,8 @@
       <tr>
         <!-- <td class="align-middle"><%= user.ID %></td> -->
         <td class="align-middle"><%= user.Name %></td>
-        <td class="align-middle"><%= user.ProviderID %></td>
-        <td class="align-middle"><%= user.AccessToken %></td>
-        <td class="align-middle"><%= user.RefreshToken %></td>
-        <!-- <td class="align-middle"><%= user.AvatarURL %></td>
-        <td class="align-middle"><%= user.CreatedAt %></td>
-        <td class="align-middle"><%= user.UpdatedAt %></td> -->
         <td>
           <div class="float-right">
-            <%= linkTo(userPath({ user_id: user.ID }), {class: "btn btn-info", body: "View"}) %>
-            <%= linkTo(userRefreshPath({ user_id: user.ID }), {class: "btn btn-warning", body: "Refresh Token"}) %>
             <%= linkTo(userActivitiesPath({ user_id: user.ID }), {class: "btn btn-success", body: "Activities"}) %>
           </div>
         </td>
