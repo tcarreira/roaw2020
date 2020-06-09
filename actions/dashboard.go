@@ -223,19 +223,27 @@ func getWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
 		User     string `json:"user" db:"user"`
 		Distance int    `json:"distance" db:"distance"`
 	}{}
-
 	err := tx.RawQuery(queryString).All(&data)
 
+	weekIdx := 0
 	returnData := weeklyDistanceStats{}
 	for _, row := range data {
 		_, ok := returnData[row.User]
 		if !ok {
 			returnData[row.User] = []weekDistance{}
+			weekIdx = 0 // assuming ordered by user first
 		}
+
+		// fill empty weeks (until the last one)
+		for ; weekIdx < row.Week-1; weekIdx++ {
+			returnData[row.User] = append(returnData[row.User], weekDistance{Week: weekIdx, Distance: 0})
+		}
+
 		returnData[row.User] = append(returnData[row.User], weekDistance{
 			Week:     row.Week,
 			Distance: row.Distance,
 		})
+		weekIdx++
 	}
 
 	return returnData, err
