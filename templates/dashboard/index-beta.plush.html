@@ -71,49 +71,29 @@
     </div>
 </div>
 
+<script src="/assets/images/color-hash.js"></script>
 
 <script>
+    var colorHash = new ColorHash();
+
     async function createWeeklyDistancesChart() {
+        var xlabel = []
+        for (i=0; i<54; i+=1){ xlabel.push(i); }
 
         const datasets = await getWeeklyDistancesDatasets()
-        console.log(datasets);
 
         var ctx = document.getElementById('distance-chart').getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: [...Array(54).keys()],
+                labels: [...xlabel],
                 datasets: datasets
             },
             options: {
                 aspectRatio: 5,
-                responsive: true,
-                title: {
-                    display: true,
-                    text: 'Weekly Distance'
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                hover: {
-                    mode: 'nearest',
-                    intersect: true
-                },
                 scales: {
-                    xAxes: [{
-                        display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Month'
-                        }
-                    }],
                     yAxes: [{
                         display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Value'
-                        },
 
                         ticks: {
                             beginAtZero: true
@@ -128,22 +108,18 @@
         const response = await fetch("/dashboard/weekly/distances", {headers: {'Content-Type': 'application/json'}});
         const userData = await response.json();
         
-        console.log(userData)
         var datasets = []
 
         Object.keys(userData).forEach(function(user, idx) {
-            console.log(user, idx)
             dataset = {
                 label: user,
                 data: userData[user],
                 fill: false,
-                backgroundColor: "rgb(255, 99, 132)",
-                borderColor: "rgb(255, 99, 132)",
-                borderWidth: 1
+                backgroundColor: colorHash.hex(user),
+                borderColor: colorHash.hex(user),
+                borderWidth: 1,
             }
         
-            console.log(user, dataset)
-
             datasets.push(dataset)
 
         });
