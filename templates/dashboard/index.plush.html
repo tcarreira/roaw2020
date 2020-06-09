@@ -84,14 +84,36 @@
     var colorHash = new ColorHash();
     var xlabel = [];
     for (i=0; i<54; i+=1){ xlabel.push(i); };
- 
-
+    
+    var myChart;
+    
+    async function drawChart(elementId, title, xlabel, datasets) {
+        var ctx = document.getElementById(elementId).getContext('2d');
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [...xlabel],
+                datasets: datasets
+            },
+            options: {
+                title: {display: true, text: title, position: "left"},
+                hover: {mode: 'nearest', intersect: false},
+                tooltips: {mode: 'nearest', intersect: false},
+                elements: {point: {radius: 1}},
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {yAxes: [{ticks: {beginAtZero: true}}]}
+            }
+        }); 
+        myChart.canvas.parentNode.style.height = '180px';
+    }
+    
     async function getDatasets(url){
         const response = await fetch(url, {headers: {'Content-Type': 'application/json'}});
         const userData = await response.json();
         
         var datasets = []
-
+        
         Object.keys(userData).forEach(function(user, idx) {
             dataset = {
                 label: user,
@@ -104,25 +126,6 @@
             datasets.push(dataset)
         });
         return datasets
-    }
-
-    async function drawChart(elementId, title, xlabel, datasets) {
-        var ctx = document.getElementById(elementId).getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [...xlabel],
-                datasets: datasets
-            },
-            options: {
-                title: {display: true, text: title, position: "left"},
-                hover: {mode: 'nearest', intersect: false},
-                tooltips: {mode: 'nearest', intersect: false},
-                elements: {point: {radius: 1}},
-                aspectRatio: 5,
-                scales: {yAxes: [{ticks: {beginAtZero: true}}]}
-            }
-        }); 
     }
 
 
