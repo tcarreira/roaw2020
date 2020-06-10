@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gobuffalo/buffalo"
@@ -183,9 +182,6 @@ func DashboardHandler(c buffalo.Context) error {
 
 		c.Set("weeklyStats", weeklyStats)
 
-		if strings.Contains(c.Request().RequestURI, "beta") {
-			return c.Render(http.StatusOK, r.HTML("/dashboard/index-beta.plush.html"))
-		}
 		return c.Render(http.StatusOK, r.HTML("/dashboard/index.plush.html"))
 	}).Wants("json", func(c buffalo.Context) error {
 		return c.Render(200, r.JSON(allUsersTotalDistance))
