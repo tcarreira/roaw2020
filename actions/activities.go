@@ -299,7 +299,7 @@ func syncAllUsersActivitiesHandler(c buffalo.Context, syncFunction func(stravaAc
 	}
 
 	return responder.Wants("html", func(c buffalo.Context) error {
-		return c.Redirect(http.StatusTemporaryRedirect, "/users")
+		return c.Redirect(http.StatusFound, "/")
 	}).Wants("json", func(c buffalo.Context) error {
 		if len(errorsSlice) > 0 {
 			return c.Render(http.StatusInternalServerError, r.JSON(errorsSlice))

@@ -7,7 +7,6 @@ import (
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop/v5"
 	"github.com/gobuffalo/x/responder"
-	"github.com/markbates/goth"
 
 	"github.com/tcarreira/roaw2020/models"
 	stravaclient "github.com/tcarreira/roaw2020/strava_client"
@@ -95,7 +94,7 @@ func ListUserActivitiesHandler(c buffalo.Context) error {
 	if err := tx.Where("user_id = ?", c.Param("user_id")).Order("activities.datetime DESC").All(activities); err != nil {
 		c.Flash().Add("error", fmt.Sprintf("Could not fetch activities (%s)", err))
 		c.Logger().Error(err)
-		return c.Redirect(http.StatusTemporaryRedirect, "/users/"+c.Param("user_id"))
+		return c.Redirect(http.StatusSeeOther, "/users/"+c.Param("user_id"))
 	}
 
 	return responder.Wants("html", func(c buffalo.Context) error {
@@ -142,6 +141,6 @@ func syncUserActivitiesHandler(c buffalo.Context, syncFunction func(stravaAccess
 		c.Flash().Add("success", "Syncronized")
 	}
 
-	return c.Redirect(http.StatusTemporaryRedirect, "/users/"+c.Param("user_id"))
+	return c.Redirect(http.StatusSeeOther, "/users/"+c.Param("user_id"))
 	// return c.Render(http.StatusOK, r.String("OK"))
 }
