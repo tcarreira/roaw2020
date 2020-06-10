@@ -77,6 +77,7 @@ func App() *buffalo.App {
 
 		activities := app.Group("/activities")
 		activities.Use(Authorize)
+		activities.Middleware.Skip(Authorize, SyncAllActivitiesHandler, SyncLastActivitiesHandler)
 		activities.GET("/sync-all", SyncAllActivitiesHandler)
 		activities.GET("/sync", SyncLastActivitiesHandler)
 		activities.Resource("", ActivitiesResource{})

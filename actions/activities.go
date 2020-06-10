@@ -288,14 +288,25 @@ func syncAllUsersActivitiesHandler(c buffalo.Context, syncFunction func(stravaAc
 		return c.Error(http.StatusNotFound, err)
 	}
 
+	errorsSlice := []string{}
 	for _, user := range *users {
 		if err := user.SyncActivities(tx, syncFunction); err != nil {
 			c.Logger().Error(err)
 			c.Flash().Add("warning", err.Error())
+			errorsSlice = append(errorsSlice, err.Error())
 			continue
 		}
 	}
 
-	return c.Redirect(http.StatusTemporaryRedirect, "/users")
-	// return c.Render(http.StatusOK, r.String("OK"))
+	return responder.Wants("html", func(c buffalo.Context) error {
+		return c.Redirect(http.StatusTemporaryRedirect, "/users")
+	}).Wants("json", func(c buffalo.Context) error {
+		if len(errorsSlice) > 0 {
+			return c.Render(http.StatusInternalServerError, r.JSON(errorsSlice))
+		}
+		return c.Render(http.StatusOK, r.String("ok"))
+	}).Wants("xml", func(c buffalo.Context) error {
+		return c.Render(http.StatusOK, r.String("OK"))
+	}).Respond(c)
+
 }
