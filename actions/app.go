@@ -92,7 +92,8 @@ func App() *buffalo.App {
 		dashboardWeekly := dashboard.Group("/weekly")
 		dashboardWeekly.GET("/distances", WeeklyDistanceStatsHandler)
 		dashboardWeekly.GET("/cumulative-distances", WeeklyCumulativeDistanceStatsHandler)
-		dashboardWeekly.GET("/count", WeeklyDistanceStatsHandler)
+		dashboardWeekly.GET("/counts", WeeklyCountStatsHandler)
+		dashboardWeekly.GET("/cumulative-counts", WeeklyCumulativeCountStatsHandler)
 		dashboardWeekly.GET("/duration", WeeklyDistanceStatsHandler)
 
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
