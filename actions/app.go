@@ -76,8 +76,8 @@ func App() *buffalo.App {
 		auth.GET("/{provider}/callback", AuthCallback)
 
 		activities := app.Group("/activities")
-		activities.GET("/activities/sync-all", SyncAllActivitiesHandler)
-		activities.GET("/activities/sync", SyncLastActivitiesHandler)
+		activities.GET("/sync-all", SyncAllActivitiesHandler)
+		activities.GET("/sync", SyncLastActivitiesHandler)
 
 		users := app.Group("/users")
 		users.Use(Authorize)
