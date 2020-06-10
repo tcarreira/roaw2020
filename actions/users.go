@@ -76,47 +76,6 @@ func ShowUsersHandler(c buffalo.Context) error {
 	}).Respond(c)
 }
 
-// RefreshUsersHandler refresh user access tokens
-func RefreshUsersHandler(c buffalo.Context) error {
-	// Get the DB connection from the context
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
-
-	user := &models.User{}
-	// To find the User the parameter user_id is used.
-	if err := tx.Find(user, c.Param("user_id")); err != nil {
-		return c.Error(http.StatusNotFound, err)
-	}
-
-	// get Strava Auth provider
-	stravaProvider, ok := goth.GetProviders()[user.Provider]
-	if !ok {
-		c.Flash().Add("danger", fmt.Sprintf("%s connector is having a problem. Contact the admin", user.Provider))
-		// TODO: add mailing here
-		return c.Redirect(http.StatusTemporaryRedirect, "/users")
-	}
-
-	// refresh auth tokens
-	newTokens, err := stravaProvider.RefreshToken(user.RefreshToken)
-	if err != nil {
-		c.Flash().Add("danger", "The token could not be refreshed")
-		return c.Redirect(http.StatusTemporaryRedirect, "/users")
-	}
-
-	if user.AccessToken == newTokens.AccessToken {
-		c.Flash().Add("success", fmt.Sprintf("Token was not renewed. Expires at %+v", newTokens.Expiry))
-	} else {
-		user.AccessToken = newTokens.AccessToken
-		user.RefreshToken = newTokens.RefreshToken
-		tx.Save(user)
-		c.Flash().Add("success", fmt.Sprintf("New token for user %s expires at %+v", user.Name, newTokens.Expiry))
-	}
-
-	return c.Redirect(http.StatusTemporaryRedirect, "/users")
-}
-
 // ListUserActivitiesHandler will list all activities (does NOT call the provider)
 func ListUserActivitiesHandler(c buffalo.Context) error {
 	// Get the DB connection from the context
