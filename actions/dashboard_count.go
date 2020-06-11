@@ -24,7 +24,7 @@ func getWeeklyCountStats(tx *pop.Connection) (weeklyCountStats, error) {
 	queryString := "SELECT " +
 		"  COALESCE(EXTRACT(WEEK FROM a.datetime),0) AS week, " +
 		"  u.name as user, " +
-		"  COUNT(*) as count " +
+		"  COUNT(a.id) as count " +
 		"FROM users u " +
 		"  LEFT JOIN activities a ON a.user_id = u.id " +
 		"WHERE a.type IS NULL OR (a.type = 'Run' " +
