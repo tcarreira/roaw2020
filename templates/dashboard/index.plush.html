@@ -19,7 +19,7 @@
             </thead>
             <tbody>
             <%= for (i, row) in totalDistance { %>
-                <tr class="<%= convertPodiumClass(i) %>">
+                <tr class="<%= convertPodiumClass(i) %>" onclick="window.location='<%= userActivitiesPath({user_id: row.UserID}) %>';" style="cursor: pointer;">
                     <td class="align-middle text-center">#<%= i+1 %></td>
                     <td class="align-middle text-center"><%= row.User %></td>
                     <td class="align-middle text-center"><%= row.Distance %></td>
@@ -36,7 +36,7 @@
             </thead>
             <tbody>
             <%= for (i, row) in totalCount { %>
-                <tr class="<%= convertPodiumClass(i) %>">
+                <tr class="<%= convertPodiumClass(i) %>" onclick="window.location='<%= userActivitiesPath({user_id: row.UserID}) %>';" style="cursor: pointer;">
                     <td class="align-middle text-center">#<%= i+1 %></td>
                     <td class="align-middle text-center"><%= row.User %></td>
                     <td class="align-middle text-center"><%= row.Count %></td>
@@ -53,7 +53,7 @@
             </thead>
             <tbody>
             <%= for (i, row) in totalDuration { %>
-                <tr class="<%= convertPodiumClass(i) %>">
+                <tr class="<%= convertPodiumClass(i) %>" onclick="window.location='<%= userActivitiesPath({user_id: row.UserID}) %>';" style="cursor: pointer;">
                     <td class="align-middle text-center">#<%= i+1 %></td>
                     <td class="align-middle text-center"><%= row.User %></td>
                     <td class="align-middle text-center"><%= secondsToHuman(row.Duration) %></td>

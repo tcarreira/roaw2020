@@ -14,19 +14,19 @@ import (
 )
 
 type userTotalDistanceData struct {
-	// RowNumber int     `json:"row_number" db:"row_number"`
+	UserID   string `json:"user_id" db:"user_id"`
 	User     string `json:"user" db:"user"`
 	Distance int    `json:"distance" db:"distance"`
 }
 
 type userTotalActivityCount struct {
-	// RowNumber int    `json:"row_number" db:"row_number"`
-	User  string `json:"user" db:"user"`
-	Count int    `json:"distance" db:"count"`
+	UserID string `json:"user_id" db:"user_id"`
+	User   string `json:"user" db:"user"`
+	Count  int    `json:"distance" db:"count"`
 }
 
 type userTotalDuration struct {
-	// RowNumber int    `json:"row_number" db:"row_number"`
+	UserID   string `json:"user_id" db:"user_id"`
 	User     string `json:"user" db:"user"`
 	Duration int    `json:"distance" db:"duration"`
 }
@@ -48,6 +48,7 @@ func getAllUsersTotalDistance(tx *pop.Connection) ([]userTotalDistanceData, erro
 	thisYear, nextYear := parseThisNextYear(os.Getenv("ROAW_2020"))
 
 	queryString := "SELECT " +
+		"  u.id as user_id, " +
 		"  u.name as user, " +
 		"  SUM(COALESCE(a.distance,0))/1000 as distance " +
 		"FROM users u " +
@@ -69,6 +70,7 @@ func getAllUsersActivityCount(tx *pop.Connection) ([]userTotalActivityCount, err
 	thisYear, nextYear := parseThisNextYear(os.Getenv("ROAW_2020"))
 
 	queryString := "SELECT " +
+		"  u.id as user_id, " +
 		"  u.name as user, " +
 		"  COUNT(a.distance) as count " +
 		"FROM users u " +
@@ -91,6 +93,7 @@ func getAllUsersTotalDuration(tx *pop.Connection) ([]userTotalDuration, error) {
 	thisYear, nextYear := parseThisNextYear(os.Getenv("ROAW_2020"))
 
 	queryString := "SELECT " +
+		"  u.id as user_id, " +
 		"  u.name as user, " +
 		"  SUM(COALESCE(a.elapsed_time,0)) as duration " +
 		"FROM users u " +
