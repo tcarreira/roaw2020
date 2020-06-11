@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"math"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/pop/v5"
 	"github.com/gobuffalo/x/responder"
 )
@@ -45,7 +45,7 @@ func parseThisNextYear(osEnv string) (string, string) {
 }
 
 func getAllUsersTotalDistance(tx *pop.Connection) ([]userTotalDistanceData, error) {
-	thisYear, nextYear := parseThisNextYear(os.Getenv("ROAW_2020"))
+	thisYear, nextYear := parseThisNextYear(envy.Get("ROAW_YEAR", ""))
 
 	queryString := "SELECT " +
 		"  u.id as user_id, " +
@@ -67,7 +67,7 @@ func getAllUsersTotalDistance(tx *pop.Connection) ([]userTotalDistanceData, erro
 }
 
 func getAllUsersActivityCount(tx *pop.Connection) ([]userTotalActivityCount, error) {
-	thisYear, nextYear := parseThisNextYear(os.Getenv("ROAW_2020"))
+	thisYear, nextYear := parseThisNextYear(envy.Get("ROAW_YEAR", ""))
 
 	queryString := "SELECT " +
 		"  u.id as user_id, " +
@@ -90,7 +90,7 @@ func getAllUsersActivityCount(tx *pop.Connection) ([]userTotalActivityCount, err
 }
 
 func getAllUsersTotalDuration(tx *pop.Connection) ([]userTotalDuration, error) {
-	thisYear, nextYear := parseThisNextYear(os.Getenv("ROAW_2020"))
+	thisYear, nextYear := parseThisNextYear(envy.Get("ROAW_YEAR", ""))
 
 	queryString := "SELECT " +
 		"  u.id as user_id, " +

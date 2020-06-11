@@ -3,9 +3,9 @@ package actions
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/pop/v5"
 	"github.com/gobuffalo/x/responder"
 )
@@ -19,7 +19,7 @@ type weekDistance struct {
 type weeklyDistanceStats map[string][]weekDistance
 
 func getWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
-	thisYear, nextYear := parseThisNextYear(os.Getenv("ROAW_2020"))
+	thisYear, nextYear := parseThisNextYear(envy.Get("ROAW_YEAR", ""))
 
 	queryString := "SELECT " +
 		"  COALESCE(EXTRACT(WEEK FROM a.datetime),0) AS week, " +
