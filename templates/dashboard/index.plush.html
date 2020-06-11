@@ -65,33 +65,43 @@
 </div>
 
 
-<div class="row p-3">
-    <div class="col-12">
-        <canvas id="cumulative-distance-chart"></canvas>
+<nav>
+    <div class="nav nav-tabs small" id="nav-tab" role="tab">
+        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Cumulative</a>
+        <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Weekly</a>
     </div>
-</div>
-<div class="row p-3">
-    <div class="col-12">
-        <canvas id="distance-chart"></canvas>
-    </div>
-</div>
+</nav>
 
-
-<div class="row p-3">
-    <div class="col-12">
-        <canvas id="cumulative-counts-chart"></canvas>
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+        <div class="row p-3">
+            <div class="col-12">
+                <canvas id="cumulative-distance-chart"></canvas>
+            </div>
+        </div>
+        <div class="row p-3">
+            <div class="col-12">
+                <canvas id="cumulative-counts-chart"></canvas>
+            </div>
+        </div>
     </div>
-</div>
-<div class="row p-3">
-    <div class="col-12">
-        <canvas id="counts-chart"></canvas>
+    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+        <div class="row p-3">
+            <div class="col-12">
+                <canvas id="distance-chart"></canvas>
+            </div>
+        </div>
+        <div class="row p-3">
+            <div class="col-12">
+                <canvas id="counts-chart"></canvas>
+            </div>
+        </div>
     </div>
 </div>
 
 
 
 <script src="/assets/images/color-hash.js"></script>
-
 <script>
     var colorHash = new ColorHash();
     var xlabel = [];
