@@ -52,8 +52,10 @@ func pace(distanceMeters, durationSeconds int) string {
 		return "-"
 	}
 
-	min := (durationSeconds / 60) / (distanceMeters / 1000)
-	sec := (durationSeconds / (distanceMeters / 1000)) % 60
+	paceSecondsKm := float64(durationSeconds) / (float64(distanceMeters) / 1000.0)
+
+	min := int(paceSecondsKm / 60.0)
+	sec := int(paceSecondsKm) % 60
 
 	return fmt.Sprintf("%02d:%02d", min, sec)
 }
