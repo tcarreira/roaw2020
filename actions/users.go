@@ -64,14 +64,15 @@ func ShowUsersHandler(c buffalo.Context) error {
 		return c.Error(http.StatusNotFound, err)
 	}
 
-	userStats, err := user.GetStats(tx)
+	allActivitiesStats, validActivitiesStats, err := user.GetStats(tx)
 	if err != nil {
 		c.Logger().Errorf("Error fetching user stats. %+v", err)
 	}
 
 	return responder.Wants("html", func(c buffalo.Context) error {
 		c.Set("user", user)
-		c.Set("userStats", userStats)
+		c.Set("allActivitiesStats", allActivitiesStats)
+		c.Set("validActivitiesStats", validActivitiesStats)
 
 		return c.Render(http.StatusOK, r.HTML("/users/show.plush.html"))
 	}).Wants("json", func(c buffalo.Context) error {
@@ -110,9 +111,6 @@ func ListUserActivitiesHandler(c buffalo.Context) error {
 
 	return responder.Wants("html", func(c buffalo.Context) error {
 		c.Set("pagination", q.Paginator)
-		c.Set("meters2km", func(distance int) string {
-			return fmt.Sprintf("%.2f", float64(distance)/1000.0)
-		})
 		c.Set("user", user)
 		c.Set("activities", activities)
 		return c.Render(http.StatusOK, r.HTML("/users/activities.plush.html"))

@@ -36,7 +36,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Total Distance</h4>
-            <p class="card-text"><%= divideIntToFloatString(userStats.ValidActivitiesDistance, 1000) %> Km</p>
+            <p class="card-text"><%= metersToKm(validActivitiesStats.Distance) %> Km</p>
           </div>
         </div>
       </div>
@@ -45,7 +45,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Total Activities</h4>
-            <p class="card-text"><%= userStats.ValidActivitiesCount %></p>
+            <p class="card-text"><%= validActivitiesStats.Count %></p>
           </div>
         </div>
       </div>
@@ -54,7 +54,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Total Time</h4>
-            <p class="card-text"><%= secondsToHuman(userStats.ValidActivitiesDurationElapsed) %></p>
+            <p class="card-text"><%= secondsToHuman(validActivitiesStats.ElapsedDuration) %></p>
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Biggest Activity</h4>
-            <p class="card-text"><%= divideIntToFloatString(userStats.ValidActivitiesMostDistance, 1000) %> Km</p>
+            <p class="card-text"><%= metersToKm(validActivitiesStats.MostDistance) %> Km</p>
           </div>
         </div>
       </div>
@@ -73,7 +73,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Longest Activity</h4>
-            <p class="card-text"><%=  secondsToHuman(userStats.ValidActivitiesMostDurationElapsed) %></p>
+            <p class="card-text"><%=  secondsToHuman(validActivitiesStats.MostElapsedDuration) %></p>
           </div>
         </div>
       </div>
@@ -82,7 +82,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Average Speed</h4>
-            <p class="card-text"><%= twoDigitPrecisionString(userStats.ValidActivitiesAverageSpeedMoving) %> m/s</p>
+            <p class="card-text"><%= speed(validActivitiesStats.Distance, validActivitiesStats.MovingDuration) %> Km/h</p>
           </div>
         </div>
       </div>
@@ -91,7 +91,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Average Pace</h4>
-            <p class="card-text"><%= twoDigitPrecisionString(userStats.ValidActivitiesAveragePaceElapsed) %> min/Km</p>
+            <p class="card-text"><%= pace(validActivitiesStats.Distance, validActivitiesStats.MovingDuration) %> min/Km</p>
           </div>
         </div>
       </div>
@@ -117,7 +117,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Total Distance</h4>
-            <p class="card-text"><%= divideIntToFloatString(userStats.TotalActivitiesDistance, 1000) %> Km</p>
+            <p class="card-text"><%= metersToKm(allActivitiesStats.Distance) %> Km</p>
           </div>
         </div>
       </div>
@@ -126,7 +126,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Total Activities</h4>
-            <p class="card-text"><%= userStats.TotalActivitiesCount %></p>
+            <p class="card-text"><%= allActivitiesStats.Count %></p>
           </div>
         </div>
       </div>
@@ -135,7 +135,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Total Time</h4>
-            <p class="card-text"><%= secondsToHuman(userStats.TotalActivitiesDurationElapsed) %></p>
+            <p class="card-text"><%= secondsToHuman(allActivitiesStats.ElapsedDuration) %></p>
           </div>
         </div>
       </div>
@@ -145,7 +145,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Biggest Activity</h4>
-            <p class="card-text"><%= divideIntToFloatString(userStats.TotalActivitiesMostDistance, 1000) %> Km</p>
+            <p class="card-text"><%= metersToKm(allActivitiesStats.MostDistance) %> Km</p>
           </div>
         </div>
       </div>
@@ -154,7 +154,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Longest Activity</h4>
-            <p class="card-text"><%=  secondsToHuman(userStats.TotalActivitiesMostDurationElapsed) %></p>
+            <p class="card-text"><%=  secondsToHuman(allActivitiesStats.MostElapsedDuration) %></p>
           </div>
         </div>
       </div>
@@ -163,7 +163,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Average Speed</h4>
-            <p class="card-text">- m/s</p>
+            <p class="card-text"><%= speed(allActivitiesStats.Distance, allActivitiesStats.MovingDuration) %> Km/h</p>
           </div>
         </div>
       </div>
@@ -172,7 +172,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Average Pace</h4>
-            <p class="card-text">- min/Km</p>
+            <p class="card-text"><%= pace(allActivitiesStats.Distance, allActivitiesStats.MovingDuration) %> min/Km</p>
           </div>
         </div>
       </div>

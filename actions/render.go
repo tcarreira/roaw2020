@@ -34,12 +34,28 @@ func SecondsToHuman(duration int) string {
 
 }
 
-func divideIntToFloatString(a, b int) string {
-	return fmt.Sprintf("%.2f", float64(a)/float64(b))
+func metersToKm(distance int) string {
+	return fmt.Sprintf("%.2f", float64(distance)/1000.0)
 }
 
-func twoDigitPrecisionString(a float64) string {
-	return fmt.Sprintf("%.2f", a)
+func speed(distanceMeters, durationSeconds int) string {
+	if durationSeconds == 0 {
+		return "-"
+	}
+
+	speedKmPerHour := float64(distanceMeters) / float64(durationSeconds) * 3.6 // x3600s/1000m
+	return fmt.Sprintf("%.2f", speedKmPerHour)
+}
+
+func pace(distanceMeters, durationSeconds int) string {
+	if durationSeconds == 0 {
+		return "-"
+	}
+
+	min := (durationSeconds / 60) / (distanceMeters / 1000)
+	sec := (durationSeconds / (distanceMeters / 1000)) % 60
+
+	return fmt.Sprintf("%02d:%02d", min, sec)
 }
 
 func init() {
@@ -53,13 +69,14 @@ func init() {
 
 		// Add template helpers here:
 		Helpers: render.Helpers{
-			"appShortName":            "ROAW",
-			"appLongName":             "Run Once a Week",
-			"appFullName":             "ROAW - Run Once a Week",
-			"isLoggedIn":              isLoggedIn,
-			"secondsToHuman":          SecondsToHuman,
-			"divideIntToFloatString":  divideIntToFloatString,
-			"twoDigitPrecisionString": twoDigitPrecisionString,
+			"appShortName":   "ROAW",
+			"appLongName":    "Run Once a Week",
+			"appFullName":    "ROAW - Run Once a Week",
+			"isLoggedIn":     isLoggedIn,
+			"secondsToHuman": SecondsToHuman,
+			"metersToKm":     metersToKm,
+			"speed":          speed,
+			"pace":           pace,
 			// "isActive": func(name string, help plush.HelperContext) string {
 			// 	if cr, ok := help.Value("current_path").(string); ok {
 			// 		if strings.HasPrefix(cr, name) {

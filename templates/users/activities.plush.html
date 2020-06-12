@@ -26,9 +26,9 @@
           <td class="align-middle"><a href="https://www.strava.com/activities/<%= activity.ProviderID %>" target=_blank><%= activity.ProviderID %></a></td>
           <td class="align-middle"><%= activity.Type %></td>
           <td class="align-middle"><%= activity.Name %></td>
-          <td class="align-middle"><%= meters2km(activity.Distance) %></td>
-          <td class="align-middle"><%= activity.MovingTime %></td>
-          <td class="align-middle"><%= activity.ElapsedTime %></td>
+          <td class="align-middle"><%= metersToKm(activity.Distance) %></td>
+          <td class="align-middle"><%= secondsToHuman(activity.MovingTime) %></td>
+          <td class="align-middle"><%= secondsToHuman(activity.ElapsedTime) %></td>
           <td class="align-middle"><%= activity.Datetime.Format("2006-01-02 15:04") %></td>
         </tr>
       <% } %>
