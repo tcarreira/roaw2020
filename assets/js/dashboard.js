@@ -3,7 +3,7 @@ $( document ).ready(function(){
 
     var colorHash = new ColorHash();
     var xlabel = [];
-    for (i=0; i<54; i+=1){ xlabel.push(i); };
+    for (let i=0; i<54; i+=1){ xlabel.push(i); };
     
     var myChart;
     
@@ -35,7 +35,7 @@ $( document ).ready(function(){
         var datasets = []
         
         Object.keys(userData).forEach(function(user, idx) {
-            dataset = {
+            let dataset = {
                 label: user,
                 data: userData[user],
                 fill: false,
