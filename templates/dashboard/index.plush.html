@@ -20,9 +20,9 @@
             <tbody>
             <%= for (i, row) in totalDistance { %>
                 <tr class="<%= convertPodiumClass(i) %>">
-                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userActivitiesPath({user_id: row.UserID}) %>"  style="display: block;">#<%= i+1 %></a></td>
-                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userActivitiesPath({user_id: row.UserID}) %>"  style="display: block;"><%= row.User %></a></td>
-                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userActivitiesPath({user_id: row.UserID}) %>"  style="display: block;"><%= row.Distance %></a></td>
+                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userPath({user_id: row.UserID}) %>"  style="display: block;">#<%= i+1 %></a></td>
+                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userPath({user_id: row.UserID}) %>"  style="display: block;"><%= row.User %></a></td>
+                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userPath({user_id: row.UserID}) %>"  style="display: block;"><%= row.Distance %></a></td>
                 </tr>
             <% } %>
             </tbody>
@@ -37,9 +37,9 @@
             <tbody>
             <%= for (i, row) in totalCount { %>
                 <tr class="<%= convertPodiumClass(i) %>">
-                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userActivitiesPath({user_id: row.UserID}) %>"  style="display: block;">#<%= i+1 %></a></td>
-                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userActivitiesPath({user_id: row.UserID}) %>"  style="display: block;"><%= row.User %></a></td>
-                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userActivitiesPath({user_id: row.UserID}) %>"  style="display: block;"><%= row.Count %></a></td>
+                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userPath({user_id: row.UserID}) %>"  style="display: block;">#<%= i+1 %></a></td>
+                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userPath({user_id: row.UserID}) %>"  style="display: block;"><%= row.User %></a></td>
+                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userPath({user_id: row.UserID}) %>"  style="display: block;"><%= row.Count %></a></td>
                 </tr>
             <% } %>
             </tbody>
@@ -53,10 +53,10 @@
             </thead>
             <tbody>
             <%= for (i, row) in totalDuration { %>
-                <tr class="<%= convertPodiumClass(i) %>" onclick="window.location='<%= userActivitiesPath({user_id: row.UserID}) %>';" style="cursor: pointer;">
-                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userActivitiesPath({user_id: row.UserID}) %>"  style="display: block;">#<%= i+1 %></a></td>
-                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userActivitiesPath({user_id: row.UserID}) %>"  style="display: block;"><%= row.User %></a></td>
-                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userActivitiesPath({user_id: row.UserID}) %>"  style="display: block;"><%= secondsToHuman(row.Duration) %></a></td>
+                <tr class="<%= convertPodiumClass(i) %>" onclick="window.location='<%= userPath({user_id: row.UserID}) %>';" style="cursor: pointer;">
+                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userPath({user_id: row.UserID}) %>"  style="display: block;">#<%= i+1 %></a></td>
+                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userPath({user_id: row.UserID}) %>"  style="display: block;"><%= row.User %></a></td>
+                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userPath({user_id: row.UserID}) %>"  style="display: block;"><%= secondsToHuman(row.Duration) %></a></td>
                 </tr>
             <% } %>
             </tbody>

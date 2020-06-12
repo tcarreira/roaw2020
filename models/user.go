@@ -114,3 +114,75 @@ func (u *User) SyncActivities(tx *pop.Connection, syncFunction func(stravaAccess
 	}
 	return nil
 }
+
+// UserStats contains public User data with activities stats
+type UserStats struct {
+	ValidActivitiesDistance int
+	TotalActivitiesDistance int
+
+	ValidActivitiesCount int
+	TotalActivitiesCount int
+
+	ValidActivitiesDurationElapsed int
+	TotalActivitiesDurationElapsed int
+	ValidActivitiesDurationMoving  int
+	TotalActivitiesDurationMoving  int
+
+	ValidActivitiesMostDistance        int
+	ValidActivitiesMostDurationElapsed int
+	ValidActivitiesMostDurationMoving  int
+
+	ValidActivitiesAverageSpeedElapsed float64
+	ValidActivitiesAverageSpeedMoving  float64
+	ValidActivitiesAveragePaceElapsed  float64
+	ValidActivitiesAveragePaceMoving   float64
+}
+
+// GetStats will return a UserStats for this User
+func (u *User) GetStats(tx *pop.Connection) (UserStats, error) {
+
+	activities := Activities{}
+
+	q := tx.Q().Where("users.id = ?", u.ID)
+	q = q.Join("users", "activities.user_id = users.id")
+	if err := q.All(&activities); err != nil {
+		return UserStats{}, err
+	}
+
+	userStats := UserStats{}
+
+	for _, activity := range activities {
+		userStats.TotalActivitiesCount++
+		userStats.TotalActivitiesDistance += activity.Distance
+		userStats.TotalActivitiesDurationElapsed += activity.ElapsedTime
+		userStats.TotalActivitiesDurationMoving += activity.MovingTime
+
+		// XXX: hardcoded 15min
+		if activity.Type == "Run" && activity.ElapsedTime > (60*15) {
+			userStats.ValidActivitiesCount++
+			userStats.ValidActivitiesDistance += activity.Distance
+			userStats.ValidActivitiesDurationElapsed += activity.ElapsedTime
+			userStats.ValidActivitiesDurationMoving += activity.MovingTime
+
+			if activity.Distance > userStats.ValidActivitiesMostDistance {
+				userStats.ValidActivitiesMostDistance = activity.Distance
+			}
+			if activity.ElapsedTime > userStats.ValidActivitiesMostDurationElapsed {
+				userStats.ValidActivitiesMostDurationElapsed = activity.ElapsedTime
+			}
+			if activity.MovingTime > userStats.ValidActivitiesMostDurationMoving {
+				userStats.ValidActivitiesMostDurationMoving = activity.MovingTime
+			}
+		}
+	}
+
+	if userStats.ValidActivitiesDurationElapsed > 0 {
+		userStats.ValidActivitiesAverageSpeedElapsed = float64(userStats.ValidActivitiesMostDistance) / float64(userStats.ValidActivitiesDurationElapsed)
+	}
+
+	if userStats.ValidActivitiesDurationMoving > 0 {
+		userStats.ValidActivitiesAverageSpeedMoving = float64(userStats.ValidActivitiesMostDistance) / float64(userStats.ValidActivitiesDurationMoving)
+	}
+
+	return userStats, nil
+}

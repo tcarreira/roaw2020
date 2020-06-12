@@ -64,8 +64,14 @@ func ShowUsersHandler(c buffalo.Context) error {
 		return c.Error(http.StatusNotFound, err)
 	}
 
+	userStats, err := user.GetStats(tx)
+	if err != nil {
+		c.Logger().Errorf("Error fetching user stats. %+v", err)
+	}
+
 	return responder.Wants("html", func(c buffalo.Context) error {
 		c.Set("user", user)
+		c.Set("userStats", userStats)
 
 		return c.Render(http.StatusOK, r.HTML("/users/show.plush.html"))
 	}).Wants("json", func(c buffalo.Context) error {

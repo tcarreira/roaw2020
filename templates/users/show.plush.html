@@ -11,29 +11,43 @@
 <ul class="list-group mb-2 ">
 
   <li class="list-group-item pb-1">
-    <label class="small d-block">Provider</label>
-    <p class="d-inline-block"><%= user.Provider %></p>
+    <label class="small d-block">Strava User</label>
+    <p class="d-inline-block"><a href="https://www.strava.com/athletes/<%= user.ProviderID %>"><%= user.ProviderID %></a></p>
   </li>
 
   <li class="list-group-item pb-1">
-    <label class="small d-block">ProviderID</label>
-    <p class="d-inline-block"><%= user.ProviderID %></p>
+    <label class="small d-block">Total Distance</label>
+    <p class="d-inline-block"><%= userStats.ValidActivitiesDistance %></p>
   </li>
 
   <li class="list-group-item pb-1">
-    <label class="small d-block">AvatarURL</label>
-    <p class="d-inline-block"><%= user.AvatarURL %></p>
+    <label class="small d-block">Total Time</label>
+    <p class="d-inline-block"><%= userStats.ValidActivitiesDurationElapsed %></p>
   </li>
 
   <li class="list-group-item pb-1">
-    <label class="small d-block">CreatedAt</label>
-    <p class="d-inline-block"><%= user.CreatedAt %></p>
+    <label class="small d-block">Total Activities</label>
+    <p class="d-inline-block"><%= userStats.ValidActivitiesCount %></p>
   </li>
 
   <li class="list-group-item pb-1">
-    <label class="small d-block">UpdatedAt</label>
-    <p class="d-inline-block"><%= user.UpdatedAt %></p>
+    <label class="small d-block">Biggest Activity</label>
+    <p class="d-inline-block"><%= userStats.ValidActivitiesMostDistance %></p>
   </li>
 
+  <li class="list-group-item pb-1">
+    <label class="small d-block">Longest Activity</label>
+    <p class="d-inline-block"><%= userStats.ValidActivitiesMostDurationElapsed %></p>
+  </li>
+
+  <li class="list-group-item pb-1">
+    <label class="small d-block">Average Speed</label>
+    <p class="d-inline-block"><%= userStats.ValidActivitiesAverageSpeedMoving %></p>
+  </li>
+
+  <li class="list-group-item pb-1">
+    <label class="small d-block">Average Pace</label>
+    <p class="d-inline-block"><%= userStats.ValidActivitiesAveragePaceElapsed %></p>
+  </li>
 
 </ul>
