@@ -1,15 +1,9 @@
 <div class="pt-4">
   <h3 class="d-inline-block"><%= user.Name %>'s Activities</h3>
   <div class="float-right">
-    <!-- <%= linkTo(usersPath(), {class: "btn btn-primary"}) { %>
-      Back to all Users
-    <% } %> -->
-    <%= linkTo("/", {class: "btn btn-primary"}) { %>
-      Sync
-    <% } %>
-    <%= linkTo("/", {class: "btn btn-primary"}) { %>
-      Home
-    <% } %>
+    <%= linkTo(rootPath(), {class: "btn btn-outline-primary", body: "Home"}) %>
+    <%= linkTo(userSyncPath({ user_id: user.ID }), {class: "btn btn-outline-warning", body: "Sync"}) %>
+    <%= linkTo(userPath({ user_id: user.ID }), {class: "btn btn-outline-success", body: "Stats"}) %>
   </div>
   
 </div>

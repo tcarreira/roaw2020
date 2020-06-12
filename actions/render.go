@@ -2,7 +2,7 @@ package actions
 
 import (
 	"fmt"
-	"strings"
+	"math"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/buffalo/render"
@@ -13,12 +13,33 @@ import (
 var r *render.Engine
 var assetsBox = packr.New("app:assets", "../public")
 
-func weekNumbersList() string {
-	list := make([]string, 53)
-	for w := 0; w < 53; w++ {
-		list[w] = fmt.Sprintf("%d", w)
+// SecondsToHuman converts minutes to human duration string (1d 7h 32m )
+func SecondsToHuman(duration int) string {
+	if duration == 0 {
+		return "0"
 	}
-	return strings.Join(list, ", ")
+
+	// seconds := int(duration % 60)
+	minutes := int(math.Floor(float64(duration%3600.0) / 60))
+	hours := int(math.Floor(float64(duration%86400.0) / 3600))
+	days := int(math.Floor(float64(duration) / 86400))
+
+	if days > 0 {
+		return fmt.Sprintf("%dd %02dh%02dm", days, hours, minutes)
+	}
+	if hours > 0 {
+		return fmt.Sprintf("%02dh%02dm", hours, minutes)
+	}
+	return fmt.Sprintf("%02dm", minutes)
+
+}
+
+func divideIntToFloatString(a, b int) string {
+	return fmt.Sprintf("%.2f", float64(a)/float64(b))
+}
+
+func twoDigitPrecisionString(a float64) string {
+	return fmt.Sprintf("%.2f", a)
 }
 
 func init() {
@@ -32,11 +53,13 @@ func init() {
 
 		// Add template helpers here:
 		Helpers: render.Helpers{
-			"appShortName":    "ROAW",
-			"appLongName":     "Run Once a Week",
-			"appFullName":     "ROAW - Run Once a Week",
-			"isLoggedIn":      isLoggedIn,
-			"weekNumbersList": weekNumbersList,
+			"appShortName":            "ROAW",
+			"appLongName":             "Run Once a Week",
+			"appFullName":             "ROAW - Run Once a Week",
+			"isLoggedIn":              isLoggedIn,
+			"secondsToHuman":          SecondsToHuman,
+			"divideIntToFloatString":  divideIntToFloatString,
+			"twoDigitPrecisionString": twoDigitPrecisionString,
 			// "isActive": func(name string, help plush.HelperContext) string {
 			// 	if cr, ok := help.Value("current_path").(string); ok {
 			// 		if strings.HasPrefix(cr, name) {

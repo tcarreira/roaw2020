@@ -2,7 +2,6 @@ package actions
 
 import (
 	"fmt"
-	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -124,27 +123,6 @@ func convertPodiumClass(i int) string {
 	return ""
 }
 
-// SecondsToHuman converts minutes to human duration string (1d 7h 32m )
-func SecondsToHuman(duration int) string {
-	if duration == 0 {
-		return "0"
-	}
-
-	// seconds := int(duration % 60)
-	minutes := int(math.Floor(float64(duration%3600.0) / 60))
-	hours := int(math.Floor(float64(duration%86400.0) / 3600))
-	days := int(math.Floor(float64(duration) / 86400))
-
-	if days > 0 {
-		return fmt.Sprintf("%dd %02dh%02dm", days, hours, minutes)
-	}
-	if hours > 0 {
-		return fmt.Sprintf("%02dh%02dm", hours, minutes)
-	}
-	return fmt.Sprintf("%02dm", minutes)
-
-}
-
 // DashboardHandler shows a dashboard
 func DashboardHandler(c buffalo.Context) error {
 	// Get the DB connection from the context
@@ -175,7 +153,6 @@ func DashboardHandler(c buffalo.Context) error {
 
 	return responder.Wants("html", func(c buffalo.Context) error {
 		c.Set("convertPodiumClass", convertPodiumClass)
-		c.Set("secondsToHuman", SecondsToHuman)
 
 		c.Set("current_user_id", c.Session().Get("current_user_id"))
 

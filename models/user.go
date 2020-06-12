@@ -117,20 +117,23 @@ func (u *User) SyncActivities(tx *pop.Connection, syncFunction func(stravaAccess
 
 // UserStats contains public User data with activities stats
 type UserStats struct {
-	ValidActivitiesDistance int
-	TotalActivitiesDistance int
-
-	ValidActivitiesCount int
-	TotalActivitiesCount int
-
+	ValidActivitiesDistance        int
+	ValidActivitiesCount           int
 	ValidActivitiesDurationElapsed int
-	TotalActivitiesDurationElapsed int
 	ValidActivitiesDurationMoving  int
+
+	TotalActivitiesDistance        int
+	TotalActivitiesCount           int
+	TotalActivitiesDurationElapsed int
 	TotalActivitiesDurationMoving  int
 
 	ValidActivitiesMostDistance        int
 	ValidActivitiesMostDurationElapsed int
 	ValidActivitiesMostDurationMoving  int
+
+	TotalActivitiesMostDistance        int
+	TotalActivitiesMostDurationElapsed int
+	TotalActivitiesMostDurationMoving  int
 
 	ValidActivitiesAverageSpeedElapsed float64
 	ValidActivitiesAverageSpeedMoving  float64
@@ -156,6 +159,16 @@ func (u *User) GetStats(tx *pop.Connection) (UserStats, error) {
 		userStats.TotalActivitiesDistance += activity.Distance
 		userStats.TotalActivitiesDurationElapsed += activity.ElapsedTime
 		userStats.TotalActivitiesDurationMoving += activity.MovingTime
+
+		if activity.Distance > userStats.TotalActivitiesMostDistance {
+			userStats.TotalActivitiesMostDistance = activity.Distance
+		}
+		if activity.ElapsedTime > userStats.TotalActivitiesMostDurationElapsed {
+			userStats.TotalActivitiesMostDurationElapsed = activity.ElapsedTime
+		}
+		if activity.MovingTime > userStats.TotalActivitiesMostDurationMoving {
+			userStats.TotalActivitiesMostDurationMoving = activity.MovingTime
+		}
 
 		// XXX: hardcoded 15min
 		if activity.Type == "Run" && activity.ElapsedTime > (60*15) {

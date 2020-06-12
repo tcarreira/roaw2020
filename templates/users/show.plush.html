@@ -1,53 +1,183 @@
-<div class="py-4 mb-2">
+
+<div class="py-4">
   <h3 class="d-inline-block"><%= user.Name %></h3>
 
   <div class="float-right">
-    <%= linkTo(userSyncPath({ user_id: user.ID }), {class: "btn btn-warning", body: "Sync Activities"}) %>
-    <%= linkTo(userActivitiesPath({ user_id: user.ID }), {class: "btn btn-info", body: "Activities"}) %>
+    <%= linkTo(rootPath(), {class: "btn btn-outline-primary", body: "Home"}) %>
+    <%= linkTo(userSyncPath({ user_id: user.ID }), {class: "btn btn-outline-warning", body: "Sync"}) %>
+    <%= linkTo(userActivitiesPath({ user_id: user.ID }), {class: "btn btn-outline-success", body: "Activities"}) %>
   </div>
 </div>
 
 
-<ul class="list-group mb-2 ">
+<nav>
+  <div class="nav nav-tabs small" id="nav-tab" role="tab">
+      <a class="nav-item nav-link active" id="nav-valid-activities-tab" data-toggle="tab" href="#nav-valid-activities" role="tab" aria-controls="nav-valid-activities" aria-selected="true">Valid Activities</a>
+      <a class="nav-item nav-link" id="nav-all-activities-tab" data-toggle="tab" href="#nav-all-activities" role="tab" aria-controls="nav-all-activities" aria-selected="false">All Activities</a>
+  </div>
+</nav>
 
-  <li class="list-group-item pb-1">
-    <label class="small d-block">Strava User</label>
-    <p class="d-inline-block"><a href="https://www.strava.com/athletes/<%= user.ProviderID %>"><%= user.ProviderID %></a></p>
-  </li>
+<div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade show active" id="nav-valid-activities" role="tabpanel" aria-labelledby="nav-valid-activities">
 
-  <li class="list-group-item pb-1">
-    <label class="small d-block">Total Distance</label>
-    <p class="d-inline-block"><%= userStats.ValidActivitiesDistance %></p>
-  </li>
+    <p class="small my-0">Includes only activities of type Run and with Elapsed Duration greater than 15 min</p>
+    <div class="row py-3">
+      
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Strava User</h4>
+            <p class="card-text"><a href="https://www.strava.com/athletes/<%= user.ProviderID %>"><%= user.ProviderID %></a></p>
+          </div>
+        </div>
+      </div>
 
-  <li class="list-group-item pb-1">
-    <label class="small d-block">Total Time</label>
-    <p class="d-inline-block"><%= userStats.ValidActivitiesDurationElapsed %></p>
-  </li>
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Total Distance</h4>
+            <p class="card-text"><%= divideIntToFloatString(userStats.ValidActivitiesDistance, 1000) %> Km</p>
+          </div>
+        </div>
+      </div>
 
-  <li class="list-group-item pb-1">
-    <label class="small d-block">Total Activities</label>
-    <p class="d-inline-block"><%= userStats.ValidActivitiesCount %></p>
-  </li>
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Total Activities</h4>
+            <p class="card-text"><%= userStats.ValidActivitiesCount %></p>
+          </div>
+        </div>
+      </div>
 
-  <li class="list-group-item pb-1">
-    <label class="small d-block">Biggest Activity</label>
-    <p class="d-inline-block"><%= userStats.ValidActivitiesMostDistance %></p>
-  </li>
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Total Time</h4>
+            <p class="card-text"><%= secondsToHuman(userStats.ValidActivitiesDurationElapsed) %></p>
+          </div>
+        </div>
+      </div>
 
-  <li class="list-group-item pb-1">
-    <label class="small d-block">Longest Activity</label>
-    <p class="d-inline-block"><%= userStats.ValidActivitiesMostDurationElapsed %></p>
-  </li>
+      
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Biggest Activity</h4>
+            <p class="card-text"><%= divideIntToFloatString(userStats.ValidActivitiesMostDistance, 1000) %> Km</p>
+          </div>
+        </div>
+      </div>
 
-  <li class="list-group-item pb-1">
-    <label class="small d-block">Average Speed</label>
-    <p class="d-inline-block"><%= userStats.ValidActivitiesAverageSpeedMoving %></p>
-  </li>
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Longest Activity</h4>
+            <p class="card-text"><%=  secondsToHuman(userStats.ValidActivitiesMostDurationElapsed) %></p>
+          </div>
+        </div>
+      </div>
 
-  <li class="list-group-item pb-1">
-    <label class="small d-block">Average Pace</label>
-    <p class="d-inline-block"><%= userStats.ValidActivitiesAveragePaceElapsed %></p>
-  </li>
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Average Speed</h4>
+            <p class="card-text"><%= twoDigitPrecisionString(userStats.ValidActivitiesAverageSpeedMoving) %> m/s</p>
+          </div>
+        </div>
+      </div>
 
-</ul>
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Average Pace</h4>
+            <p class="card-text"><%= twoDigitPrecisionString(userStats.ValidActivitiesAveragePaceElapsed) %> min/Km</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="tab-pane fade" id="nav-all-activities" role="tabpanel" aria-labelledby="nav-all-activities">
+    
+    <p class="small my-0">Includes all activities (do NOT limit by type Run and with Elapsed Duration greater than 15 min)</p>
+    <div class="row py-3">
+    
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Strava User</h4>
+            <p class="card-text"><a href="https://www.strava.com/athletes/<%= user.ProviderID %>"><%= user.ProviderID %></a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Total Distance</h4>
+            <p class="card-text"><%= divideIntToFloatString(userStats.TotalActivitiesDistance, 1000) %> Km</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Total Activities</h4>
+            <p class="card-text"><%= userStats.TotalActivitiesCount %></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Total Time</h4>
+            <p class="card-text"><%= secondsToHuman(userStats.TotalActivitiesDurationElapsed) %></p>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Biggest Activity</h4>
+            <p class="card-text"><%= divideIntToFloatString(userStats.TotalActivitiesMostDistance, 1000) %> Km</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Longest Activity</h4>
+            <p class="card-text"><%=  secondsToHuman(userStats.TotalActivitiesMostDurationElapsed) %></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Average Speed</h4>
+            <p class="card-text">- m/s</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-6 col-sm-4 col-md-3 py-2">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Average Pace</h4>
+            <p class="card-text">- min/Km</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
