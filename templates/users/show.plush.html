@@ -28,7 +28,7 @@
     <div class="row py-3">
       
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Strava User</h4>
             <p class="card-text"><a href="https://www.strava.com/athletes/<%= user.ProviderID %>"><%= user.ProviderID %></a></p>
@@ -37,7 +37,7 @@
       </div>
 
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Total Distance</h4>
             <p class="card-text"><%= metersToKm(validActivitiesStats.Distance) %> Km</p>
@@ -46,7 +46,7 @@
       </div>
 
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Total Activities</h4>
             <p class="card-text"><%= validActivitiesStats.Count %></p>
@@ -55,7 +55,7 @@
       </div>
 
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Total Time</h4>
             <p class="card-text"><%= secondsToHuman(validActivitiesStats.ElapsedDuration) %></p>
@@ -65,7 +65,7 @@
 
       
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Biggest Activity</h4>
             <p class="card-text"><%= metersToKm(validActivitiesStats.MostDistance) %> Km</p>
@@ -74,7 +74,7 @@
       </div>
 
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Longest Activity</h4>
             <p class="card-text"><%=  secondsToHuman(validActivitiesStats.MostElapsedDuration) %></p>
@@ -83,7 +83,7 @@
       </div>
 
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Average Speed</h4>
             <p class="card-text"><%= speed(validActivitiesStats.Distance, validActivitiesStats.MovingDuration) %> Km/h</p>
@@ -92,7 +92,7 @@
       </div>
 
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Average Pace</h4>
             <p class="card-text"><%= pace(validActivitiesStats.Distance, validActivitiesStats.MovingDuration) %> min/Km</p>
@@ -109,7 +109,7 @@
     <div class="row py-3">
     
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Strava User</h4>
             <p class="card-text"><a href="https://www.strava.com/athletes/<%= user.ProviderID %>"><%= user.ProviderID %></a></p>
@@ -118,7 +118,7 @@
       </div>
 
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Total Distance</h4>
             <p class="card-text"><%= metersToKm(allActivitiesStats.Distance) %> Km</p>
@@ -127,7 +127,7 @@
       </div>
 
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Total Activities</h4>
             <p class="card-text"><%= allActivitiesStats.Count %></p>
@@ -136,7 +136,7 @@
       </div>
 
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Total Time</h4>
             <p class="card-text"><%= secondsToHuman(allActivitiesStats.ElapsedDuration) %></p>
@@ -146,7 +146,7 @@
 
       
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Biggest Activity</h4>
             <p class="card-text"><%= metersToKm(allActivitiesStats.MostDistance) %> Km</p>
@@ -155,7 +155,7 @@
       </div>
 
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Longest Activity</h4>
             <p class="card-text"><%=  secondsToHuman(allActivitiesStats.MostElapsedDuration) %></p>
@@ -164,7 +164,7 @@
       </div>
 
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Average Speed</h4>
             <p class="card-text"><%= speed(allActivitiesStats.Distance, allActivitiesStats.MovingDuration) %> Km/h</p>
@@ -173,7 +173,7 @@
       </div>
 
       <div class="col-xs-6 col-sm-4 col-md-3 py-2">
-        <div class="card">
+        <div class="card bg-light">
           <div class="card-body">
             <h4 class="card-title">Average Pace</h4>
             <p class="card-text"><%= pace(allActivitiesStats.Distance, allActivitiesStats.MovingDuration) %> min/Km</p>
