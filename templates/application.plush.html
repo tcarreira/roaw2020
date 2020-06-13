@@ -18,6 +18,14 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>
     
+    <meta property="og:site_name" content="<%= appLongName %>">
+    <meta property="og:title" content="<%= appShortName %>" />
+    <meta property="og:description" content="Dashboard for Strava users' activities" />
+    <meta property="og:image" itemprop="image" content="<%= host %><%= assetPath("images/run.svg") %>">
+    <meta property="og:image:secure_url" itemprop="image" content="<%= host %>>%= assetPath("images/run.svg") %>">
+    <meta property="og:type" content="website" />
+    <meta property="og:updated_time" content="1592065366" />
+
   </head>
   <body>
     <%= partial("nav.html") %>

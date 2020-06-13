@@ -84,6 +84,7 @@ func init() {
 			"speed":          speed,
 			"pace":           pace,
 			"eq":             eq,
+			"host":           App().Options.Host,
 			// "isActive": func(name string, help plush.HelperContext) string {
 			// 	if cr, ok := help.Value("current_path").(string); ok {
 			// 		if strings.HasPrefix(cr, name) {
