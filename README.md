@@ -1,6 +1,11 @@
 # ROAW - Run Once a Week
 
+![Icon](assets/images/run.png)
+
+
 Dashboard for statistics and fast comparing with friends' activities on [Strava](https://www.strava.com) over the year.
+
+
 
 # Features 
 
