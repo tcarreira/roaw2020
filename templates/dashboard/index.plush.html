@@ -5,8 +5,8 @@
         <h4><%= appLongName %></h4>
     </div>
     <div class="col-5">
-        <%= if (current_user_id) { %>
-            <%= linkTo(userActivitiesPath({ user_id: current_user_id }), {class: "btn btn-outline-primary float-right", body: "My Activities"}) %>
+        <%= if (current_user.ID) { %>
+            <%= linkTo(userActivitiesPath({ user_id: current_user.ID }), {class: "btn btn-outline-primary float-right", body: "My Activities"}) %>
         <% } %> 
     </div>
 </div>

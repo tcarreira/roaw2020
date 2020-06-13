@@ -154,8 +154,6 @@ func DashboardHandler(c buffalo.Context) error {
 	return responder.Wants("html", func(c buffalo.Context) error {
 		c.Set("convertPodiumClass", convertPodiumClass)
 
-		c.Set("current_user_id", c.Session().Get("current_user_id"))
-
 		c.Set("totalDistance", allUsersTotalDistance)
 		c.Set("totalCount", allUsersActivityCount)
 		c.Set("totalDuration", allUsersTotalDuration)
