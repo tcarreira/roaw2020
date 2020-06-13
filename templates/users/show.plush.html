@@ -5,13 +5,42 @@
   <div class="float-right">
 
   <%= if (eq(user.ID, current_user.ID)) { %>
-    <a href="#delete" id="delete-user" class="btn btn-outline-danger">Delete</a>
+    <a href="#delete" id="delete-user" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">Delete</a>
   <% } %>  
     <%= linkTo(rootPath(), {class: "btn btn-outline-primary", body: "Home"}) %>
     <%= linkTo(userSyncPath({ user_id: user.ID }), {class: "btn btn-outline-warning", body: "Sync"}) %>
     <%= linkTo(userActivitiesPath({ user_id: user.ID }), {class: "btn btn-outline-success", body: "Activities"}) %>
   </div>
 </div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Delete user <%= user.Name %></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><small>Not implemented yet</small></p>
+
+        <p>Do you want to remove this user from database? 
+          All User's data (including all activities) will be removed.</p>
+        <p>This action is permanent.</p>
+        <p class="float-right"><small>(If you login later, all activities will be fetched again)</small></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Delete User</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 <nav>

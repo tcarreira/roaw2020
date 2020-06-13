@@ -83,6 +83,7 @@ func App() *buffalo.App {
 		users.Use(Authorize)
 		users.GET("", ListUsersHandler)
 		users.GET("/{user_id}", ShowUsersHandler)
+		// users.DELETE("/{user_id}", DeleteUsersHandler)
 		users.GET("/{user_id}/activities", ListUserActivitiesHandler)
 		users.GET("/{user_id}/sync", SyncUserLatestActivitiesHandler)
 		users.GET("/{user_id}/sync-all", SyncUserAllActivitiesHandler)
