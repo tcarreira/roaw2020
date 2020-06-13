@@ -22,7 +22,7 @@
                 <tr class="<%= convertPodiumClass(i) %>">
                     <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userPath({user_id: row.UserID}) %>"  style="display: block;">#<%= i+1 %></a></td>
                     <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userPath({user_id: row.UserID}) %>"  style="display: block;"><%= row.User %></a></td>
-                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userPath({user_id: row.UserID}) %>"  style="display: block;"><%= row.Distance %></a></td>
+                    <td class="align-middle text-center"><a class="btn btn-sm" href="<%= userPath({user_id: row.UserID}) %>"  style="display: block;"><%= metersToKm(row.Distance) %></a></td>
                 </tr>
             <% } %>
             </tbody>
@@ -69,6 +69,7 @@
     <div class="nav nav-tabs small" id="nav-tab" role="tab">
         <a class="nav-item nav-link active" id="nav-cumulative-tab" data-toggle="tab" href="#nav-cumulative" role="tab" aria-controls="nav-cumulative" aria-selected="true">Cumulative</a>
         <a class="nav-item nav-link" id="nav-weekly-tab" data-toggle="tab" href="#nav-weekly" role="tab" aria-controls="nav-weekly" aria-selected="false">Weekly</a>
+        <a class="nav-item nav-link" id="nav-other-top-tab" data-toggle="tab" href="#nav-other-top" role="tab" aria-controls="nav-other-top" aria-selected="false">Other Tops</a>
     </div>
 </nav>
 
@@ -97,10 +98,18 @@
             </div>
         </div>
     </div>
+    <div class="tab-pane fade" id="nav-other-top" role="tabpanel" aria-labelledby="nav-other-top-tab">
+        <div class="d-flex justify-content-center">
+            <div id="nav-other-top-spinner" class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <div id="other-tops-content"><%# filled with javascript %></div>
+    </div>
 </div>
 
 
 
 <%= javascriptTag("color-hash.js") %>
 <%= javascriptTag("dashboard.js") %>
-

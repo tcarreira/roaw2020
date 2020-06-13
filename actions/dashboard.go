@@ -12,19 +12,19 @@ import (
 	"github.com/gobuffalo/x/responder"
 )
 
-type userTotalDistanceData struct {
+type userDistanceData struct {
 	UserID   string `json:"user_id" db:"user_id"`
 	User     string `json:"user" db:"user"`
 	Distance int    `json:"distance" db:"distance"`
 }
 
-type userTotalActivityCount struct {
+type userActivityCount struct {
 	UserID string `json:"user_id" db:"user_id"`
 	User   string `json:"user" db:"user"`
 	Count  int    `json:"distance" db:"count"`
 }
 
-type userTotalDuration struct {
+type userDuration struct {
 	UserID   string `json:"user_id" db:"user_id"`
 	User     string `json:"user" db:"user"`
 	Duration int    `json:"distance" db:"duration"`
@@ -43,13 +43,13 @@ func parseThisNextYear(osEnv string) (string, string) {
 	return fmt.Sprintf("%d", thisYear), fmt.Sprintf("%d", thisYear+1)
 }
 
-func getAllUsersTotalDistance(tx *pop.Connection) ([]userTotalDistanceData, error) {
+func getAllUsersTotalDistance(tx *pop.Connection) ([]userDistanceData, error) {
 	thisYear, nextYear := parseThisNextYear(envy.Get("ROAW_YEAR", ""))
 
 	queryString := "SELECT " +
 		"  u.id as user_id, " +
 		"  u.name as user, " +
-		"  SUM(COALESCE(a.distance,0))/1000 as distance " +
+		"  SUM(COALESCE(a.distance,0)) as distance " +
 		"FROM users u " +
 		"  LEFT JOIN activities a ON a.user_id = u.id " +
 		"WHERE a.type IS NULL OR (a.type = 'Run' " +
@@ -58,14 +58,14 @@ func getAllUsersTotalDistance(tx *pop.Connection) ([]userTotalDistanceData, erro
 		"GROUP BY u.id " +
 		"ORDER BY distance DESC"
 
-	data := []userTotalDistanceData{}
+	data := []userDistanceData{}
 
 	err := tx.RawQuery(queryString).All(&data)
 
 	return data, err
 }
 
-func getAllUsersActivityCount(tx *pop.Connection) ([]userTotalActivityCount, error) {
+func getAllUsersActivityCount(tx *pop.Connection) ([]userActivityCount, error) {
 	thisYear, nextYear := parseThisNextYear(envy.Get("ROAW_YEAR", ""))
 
 	queryString := "SELECT " +
@@ -81,14 +81,14 @@ func getAllUsersActivityCount(tx *pop.Connection) ([]userTotalActivityCount, err
 		"GROUP BY u.id " +
 		"ORDER BY count DESC"
 
-	data := []userTotalActivityCount{}
+	data := []userActivityCount{}
 
 	err := tx.RawQuery(queryString).All(&data)
 
 	return data, err
 }
 
-func getAllUsersTotalDuration(tx *pop.Connection) ([]userTotalDuration, error) {
+func getAllUsersTotalDuration(tx *pop.Connection) ([]userDuration, error) {
 	thisYear, nextYear := parseThisNextYear(envy.Get("ROAW_YEAR", ""))
 
 	queryString := "SELECT " +
@@ -103,7 +103,51 @@ func getAllUsersTotalDuration(tx *pop.Connection) ([]userTotalDuration, error) {
 		"GROUP BY u.id " +
 		"ORDER BY duration DESC"
 
-	data := []userTotalDuration{}
+	data := []userDuration{}
+
+	err := tx.RawQuery(queryString).All(&data)
+
+	return data, err
+}
+
+func getAllUsersMostDistance(tx *pop.Connection) ([]userDistanceData, error) {
+	thisYear, nextYear := parseThisNextYear(envy.Get("ROAW_YEAR", ""))
+
+	queryString := "SELECT " +
+		"  u.id as user_id, " +
+		"  u.name as user, " +
+		"  MAX(COALESCE(a.distance,0)) as distance " +
+		"FROM users u " +
+		"  LEFT JOIN activities a ON a.user_id = u.id " +
+		"WHERE a.type IS NULL OR (a.type = 'Run' " +
+		"  AND a.datetime >= '" + thisYear + "-01-01' " +
+		"  AND a.datetime <  '" + nextYear + "-01-01' ) " +
+		"GROUP BY u.id " +
+		"ORDER BY distance DESC"
+
+	data := []userDistanceData{}
+
+	err := tx.RawQuery(queryString).All(&data)
+
+	return data, err
+}
+
+func getAllUsersMostDuration(tx *pop.Connection) ([]userDuration, error) {
+	thisYear, nextYear := parseThisNextYear(envy.Get("ROAW_YEAR", ""))
+
+	queryString := "SELECT " +
+		"  u.id as user_id, " +
+		"  u.name as user, " +
+		"  MAX(COALESCE(a.elapsed_time,0)) as duration " +
+		"FROM users u " +
+		"  LEFT JOIN activities a ON a.user_id = u.id " +
+		"WHERE a.type IS NULL OR (a.type = 'Run' " +
+		"  AND a.datetime >= '" + thisYear + "-01-01' " +
+		"  AND a.datetime <  '" + nextYear + "-01-01' ) " +
+		"GROUP BY u.id " +
+		"ORDER BY duration DESC"
+
+	data := []userDuration{}
 
 	err := tx.RawQuery(queryString).All(&data)
 
@@ -167,4 +211,36 @@ func DashboardHandler(c buffalo.Context) error {
 		return c.Render(200, r.XML(allUsersTotalDistance))
 	}).Respond(c)
 
+}
+
+// DashboardOtherTopsHandler returns simple html (expected to be requested by js)
+func DashboardOtherTopsHandler(c buffalo.Context) error {
+	// Get the DB connection from the context
+	tx, ok := c.Value("tx").(*pop.Connection)
+	if !ok {
+		return fmt.Errorf("no transaction found")
+	}
+
+	allUsersMostDistance, err := getAllUsersMostDistance(tx)
+	if err != nil {
+		c.Flash().Add("error", fmt.Sprintf("Error fetching most distance data: %v", err))
+	}
+
+	allUsersMostDuration, err := getAllUsersMostDuration(tx)
+	if err != nil {
+		c.Flash().Add("error", fmt.Sprintf("Error fetching most duration data: %v", err))
+	}
+
+	return responder.Wants("html", func(c buffalo.Context) error {
+		c.Set("convertPodiumClass", convertPodiumClass)
+
+		c.Set("mostDistance", allUsersMostDistance)
+		c.Set("mostDuration", allUsersMostDuration)
+
+		return c.Render(http.StatusOK, r.Plain("/dashboard/other-tops.plush.html"))
+	}).Wants("json", func(c buffalo.Context) error {
+		return c.Render(200, r.JSON(allUsersMostDistance))
+	}).Wants("xml", func(c buffalo.Context) error {
+		return c.Render(200, r.XML(allUsersMostDistance))
+	}).Respond(c)
 }

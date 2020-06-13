@@ -60,6 +60,10 @@ func pace(distanceMeters, durationSeconds int) string {
 	return fmt.Sprintf("%02d:%02d", min, sec)
 }
 
+func eq(a, b interface{}) bool {
+	return a == b
+}
+
 func init() {
 	r = render.New(render.Options{
 		// HTML layout to be used for all HTML requests:
@@ -79,6 +83,7 @@ func init() {
 			"metersToKm":     metersToKm,
 			"speed":          speed,
 			"pace":           pace,
+			"eq":             eq,
 			// "isActive": func(name string, help plush.HelperContext) string {
 			// 	if cr, ok := help.Value("current_path").(string); ok {
 			// 		if strings.HasPrefix(cr, name) {

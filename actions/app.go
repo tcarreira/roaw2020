@@ -89,6 +89,7 @@ func App() *buffalo.App {
 
 		dashboard := app.Group("/dashboard")
 		dashboard.GET("", DashboardHandler)
+		dashboard.GET("/other-tops", DashboardOtherTopsHandler)
 		dashboardWeekly := dashboard.Group("/weekly")
 		dashboardWeekly.GET("/distances", WeeklyDistanceStatsHandler)
 		dashboardWeekly.GET("/cumulative-distances", WeeklyCumulativeDistanceStatsHandler)

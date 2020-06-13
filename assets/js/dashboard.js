@@ -75,3 +75,18 @@ $( document ).ready(function(){
     createWeeklyCountsChart();
     createCumulativeCountsChart();
 });
+
+
+async function fillHtmlDiv(selector,spinnerSelector, url) {
+    const response = await fetch(url, {headers: {'Content-Type': 'text/html'}});
+    const body = await response.text();
+    $(spinnerSelector).addClass("d-none");
+    $(selector).html(body);
+}
+
+$("#nav-other-top-tab").on("shown.bs.tab", function (e) {
+    // Fetch if div is empty
+    if ($("#other-tops-content").html() == ""){
+        fillHtmlDiv("#other-tops-content", "#nav-other-top-spinner", "/dashboard/other-tops")
+    }
+});
