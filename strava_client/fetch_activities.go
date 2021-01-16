@@ -2,9 +2,11 @@ package stravaclient
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/antihax/optional"
+	"github.com/gobuffalo/envy"
 	"github.com/tcarreira/roaw2020/strava_client/swagger"
 )
 
@@ -15,15 +17,29 @@ type StravaAPI struct {
 	opts   *swagger.ActivitiesApiGetLoggedInAthleteActivitiesOpts
 }
 
-// NewStravaAPI returns a StravaAPI ready to make API calls (on behalfe of stravaAccessToken)
+func getThisYear() int {
+
+	osEnv := envy.Get("ROAW_YEAR", "")
+	thisYear, err := strconv.Atoi(osEnv)
+	if err != nil {
+		// Fail silently
+		return time.Now().Year()
+	}
+
+	return thisYear
+}
+
+// NewStravaAPI returns a StravaAPI ready to make API calls (on behalf of stravaAccessToken)
 // with default opts (like after/before dates)
 func NewStravaAPI(stravaAccessToken string) *StravaAPI {
+	thisYear := getThisYear()
+
 	s := &StravaAPI{
 		client: swagger.NewAPIClient(swagger.NewConfiguration()),
 		ctx:    context.WithValue(context.Background(), swagger.ContextAccessToken, stravaAccessToken),
 		opts: &swagger.ActivitiesApiGetLoggedInAthleteActivitiesOpts{
-			After:   optional.NewInt32(int32(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Unix())),
-			Before:  optional.NewInt32(int32(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC).Unix())),
+			After:   optional.NewInt32(int32(time.Date(thisYear, 1, 1, 0, 0, 0, 0, time.UTC).Unix())),
+			Before:  optional.NewInt32(int32(time.Date(thisYear+1, 1, 1, 0, 0, 0, 0, time.UTC).Unix())),
 			Page:    optional.NewInt32(1),
 			PerPage: optional.NewInt32(int32(5)),
 		},
