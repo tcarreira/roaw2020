@@ -22,7 +22,12 @@ func getWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
 	thisYear, nextYear := parseThisNextYear(envy.Get("ROAW_YEAR", ""))
 
 	queryString := "SELECT " +
-		"  COALESCE(EXTRACT(WEEK FROM a.datetime),0) AS week, " +
+		"  COALESCE(" +
+		"    CASE " +
+		"      WHEN DATE_PART('isoyear', a.datetime) < " + thisYear + " then 0 " +
+		"      ELSE DATE_PART('week', a.datetime) " +
+		"    END " +
+		"  , 0) AS week, " +
 		"  u.name as user, " +
 		"  SUM(COALESCE(a.distance,0))/1000 as distance " +
 		"FROM users u " +

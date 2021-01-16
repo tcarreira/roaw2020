@@ -22,7 +22,12 @@ func getWeeklyCountStats(tx *pop.Connection) (weeklyCountStats, error) {
 	thisYear, nextYear := parseThisNextYear(envy.Get("ROAW_YEAR", ""))
 
 	queryString := "SELECT " +
-		"  COALESCE(EXTRACT(WEEK FROM a.datetime),0) AS week, " +
+		"  COALESCE(" +
+		"    CASE " +
+		"      WHEN DATE_PART('isoyear', a.datetime) < " + thisYear + " then 0 " +
+		"      ELSE DATE_PART('week', a.datetime) " +
+		"    END " +
+		"  , 0) AS week, " +
 		"  u.name as user, " +
 		"  COUNT(a.id) as count " +
 		"FROM users u " +
