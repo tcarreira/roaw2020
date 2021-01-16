@@ -5,7 +5,9 @@ go 1.14
 require (
 	github.com/antihax/optional v1.0.0
 	github.com/gobuffalo/buffalo v0.15.5
-	github.com/gobuffalo/buffalo-pop/v2 v2.0.6
+	github.com/gobuffalo/buffalo-goth v1.3.0 // indirect
+	github.com/gobuffalo/buffalo-heroku v1.0.9 // indirect
+	github.com/gobuffalo/buffalo-pop/v2 v2.3.0
 	github.com/gobuffalo/envy v1.9.0
 	github.com/gobuffalo/mw-csrf v0.0.0-20190129204204-25460a055517
 	github.com/gobuffalo/mw-forcessl v0.0.0-20180802152810-73921ae7a130
@@ -14,7 +16,7 @@ require (
 	github.com/gobuffalo/nulls v0.2.0
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gobuffalo/plush v3.8.3+incompatible
-	github.com/gobuffalo/pop/v5 v5.1.1
+	github.com/gobuffalo/pop/v5 v5.3.0
 	github.com/gobuffalo/suite v2.8.2+incompatible
 	github.com/gobuffalo/validate/v3 v3.3.0
 	github.com/gobuffalo/x v0.0.0-20190224155809-6bb134105960

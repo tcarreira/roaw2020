@@ -39,7 +39,7 @@ const configurator = {
   plugins() {
     var plugins = [
       new MiniCssExtractPlugin({filename: "[name].[contenthash].css"}),
-      new CopyWebpackPlugin([{from: "./assets",to: ""}], {copyUnmodified: true,ignore: ["css/**", "js/**", "src/**"] }),
+      new CopyWebpackPlugin({patterns: [{from: "./assets",to: ""}]}, {copyUnmodified: true,ignore: ["css/**", "js/**", "src/**"] }),
       new ManifestPlugin({fileName: "manifest.json"}),
       new CleanObsoleteChunks()
     ];
