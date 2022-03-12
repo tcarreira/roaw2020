@@ -18,7 +18,15 @@ type weekDistance struct {
 // map user to struct
 type weeklyDistanceStats map[string][]weekDistance
 
-func getWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
+func (distanceStats *weeklyDistanceStats) convertMetersToKm() {
+	for userIdx, weeksDistances := range *distanceStats {
+		for distIdx, _ := range weeksDistances {
+			(*distanceStats)[userIdx][distIdx].Distance = (*distanceStats)[userIdx][distIdx].Distance / 1000
+		}
+	}
+}
+
+func getRawWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
 	thisYear, nextYear := parseThisNextYear(envy.Get("ROAW_YEAR", ""))
 
 	queryString := "SELECT " +
@@ -29,7 +37,7 @@ func getWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
 		"    END " +
 		"  , 0) AS week, " +
 		"  u.name as user, " +
-		"  SUM(COALESCE(a.distance,0))/1000 as distance " +
+		"  SUM(COALESCE(a.distance,0)) as distance " +
 		"FROM users u " +
 		"  LEFT JOIN activities a ON a.user_id = u.id " +
 		"WHERE a.type IS NULL OR (a.type = 'Run' " +
@@ -70,8 +78,18 @@ func getWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
 
 }
 
+func getWeeklyDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
+	distanceStats, err := getRawWeeklyDistanceStats(tx)
+	if err != nil {
+		return weeklyDistanceStats{}, nil
+	}
+
+	distanceStats.convertMetersToKm()
+	return distanceStats, nil
+}
+
 func getWeeklyCumulativeDistanceStats(tx *pop.Connection) (weeklyDistanceStats, error) {
-	distanceStats, err := getWeeklyDistanceStats(tx)
+	distanceStats, err := getRawWeeklyDistanceStats(tx)
 	if err != nil {
 		return weeklyDistanceStats{}, nil
 	}
@@ -97,6 +115,7 @@ func getWeeklyCumulativeDistanceStats(tx *pop.Connection) (weeklyDistanceStats, 
 		}
 	}
 
+	distanceStats.convertMetersToKm()
 	return distanceStats, nil
 }
 
