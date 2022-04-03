@@ -110,7 +110,13 @@ func ListUserActivitiesHandler(c buffalo.Context) error {
 	}
 
 	return responder.Wants("html", func(c buffalo.Context) error {
+		// isSameUser := false
+		// if cuid, ok := c.Session().Get("current_user_id").(uuid.UUID); ok {
+		// 	isSameUser = cuid == user.ID
+		// }
+
 		c.Set("pagination", q.Paginator)
+		// c.Set("isSameUser", isSameUser)
 		c.Set("user", user)
 		c.Set("activities", activities)
 		return c.Render(http.StatusOK, r.HTML("/users/activities.plush.html"))

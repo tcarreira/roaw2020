@@ -78,6 +78,8 @@ func App() *buffalo.App {
 		activities := app.Group("/activities")
 		activities.GET("/sync-all", SyncAllActivitiesHandler)
 		activities.GET("/sync", SyncLastActivitiesHandler)
+		activities.GET("/{activity_id}", ActivitiesResource{}.Show)
+		activities.DELETE("/{activity_id}", ActivitiesResource{}.Destroy)
 
 		users := app.Group("/users")
 		users.Use(Authorize)

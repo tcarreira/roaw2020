@@ -5,7 +5,6 @@
     <%= linkTo(userSyncPath({ user_id: user.ID }), {class: "btn btn-outline-warning", body: "Sync"}) %>
     <%= linkTo(userPath({ user_id: user.ID }), {class: "btn btn-outline-success", body: "Stats"}) %>
   </div>
-  
 </div>
 
 <div class="table-responsive py-3">
@@ -20,11 +19,10 @@
       <th>Speed (Km/h)</th>
       <th>Pace (min/Km)</th>
       <th>Date</th>
-    
     </thead>
     <tbody>
       <%= for (activity) in activities { %>
-        <tr <%= if (activity.Type != "Run") { %> style="text-decoration: line-through;" <% } %>>
+        <tr activity_id="<%= activity.ID %>" <%= if (activity.Type != "Run") { %> style="text-decoration: line-through;" <% } %>>
           <td class="align-middle"><a href="https://www.strava.com/activities/<%= activity.ProviderID %>" target="_blank"><%= activity.ProviderID %></a></td>
           <td class="align-middle"><%= activity.Type %></td>
           <td class="align-middle"><%= activity.Name %></td>

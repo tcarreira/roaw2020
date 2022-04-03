@@ -3,8 +3,10 @@ package actions
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/pop/v5"
 	"github.com/gobuffalo/x/responder"
 	"github.com/gofrs/uuid"
@@ -39,6 +41,21 @@ func (v ActivitiesResource) scope(c buffalo.Context) *pop.Query {
 	}
 
 	cuid := c.Session().Get("current_user_id")
+
+	if c.Request().Method == http.MethodDelete {
+		allowedUsers := []interface{}{cuid}
+		adminUsersStr := envy.Get("ROAW_ADMINS", "")
+
+		for _, uuid := range strings.Split(adminUsersStr, ",") {
+			trimmed := strings.TrimSpace(uuid)
+			if trimmed == "" {
+				continue
+			}
+			allowedUsers = append(allowedUsers, trimmed)
+		}
+
+		return tx.Where("user_id IN (?)", allowedUsers...)
+	}
 
 	// XXX: make this right
 	param := c.Param("all")
