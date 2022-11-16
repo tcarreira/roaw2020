@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/gobuffalo/pop/v5"
@@ -106,7 +105,7 @@ func ParseStravaActivity(stravaActivity swagger.SummaryActivity, user User) *Act
 	return &Activity{
 		UserID:      user.ID,
 		Provider:    user.Provider,
-		ProviderID:  strconv.Itoa(int(stravaActivity.Id)),
+		ProviderID:  fmt.Sprintf("%d", stravaActivity.Id),
 		Name:        stravaActivity.Name,
 		Type:        fmt.Sprintf("%v", *stravaActivity.Type_),
 		Datetime:    stravaActivity.StartDateLocal,
