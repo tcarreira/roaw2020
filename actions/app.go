@@ -67,6 +67,7 @@ func App() *buffalo.App {
 
 		// app.GET("/", HomeHandler)
 		app.GET("/", DashboardHandler)
+		app.GET("/redirect", RedirectHandler)
 
 		// /auth/ endpoints
 		auth := app.Group("/auth")

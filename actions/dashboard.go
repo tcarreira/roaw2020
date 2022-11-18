@@ -213,6 +213,10 @@ func DashboardHandler(c buffalo.Context) error {
 
 }
 
+func RedirectHandler(c buffalo.Context) error {
+	return c.Render(http.StatusTemporaryRedirect, r.HTML("/redirect.html"))
+}
+
 // DashboardOtherTopsHandler returns simple html (expected to be requested by js)
 func DashboardOtherTopsHandler(c buffalo.Context) error {
 	// Get the DB connection from the context
