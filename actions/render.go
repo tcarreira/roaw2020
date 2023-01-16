@@ -48,7 +48,7 @@ func speed(distanceMeters, durationSeconds int) string {
 }
 
 func pace(distanceMeters, durationSeconds int) string {
-	if durationSeconds == 0 {
+	if durationSeconds == 0 || distanceMeters == 0 {
 		return "-"
 	}
 
